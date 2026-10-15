@@ -1,0 +1,864 @@
+{
+  "step_timings": [
+    {
+      "step": 1,
+      "inference": {
+        "start_mono_ns": 326469187217988,
+        "end_mono_ns": 326471482340584,
+        "elapsed_s": 2.295122596,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 326471482350352,
+          "end_mono_ns": 326471567980557,
+          "elapsed_s": 0.085630205,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "inference": {
+        "start_mono_ns": 326471569752960,
+        "end_mono_ns": 326477243632602,
+        "elapsed_s": 5.673879642,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 326477243643162,
+          "end_mono_ns": 326477336922664,
+          "elapsed_s": 0.093279502,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "inference": {
+        "start_mono_ns": 326477338396855,
+        "end_mono_ns": 326482341977726,
+        "elapsed_s": 5.003580871,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 326482341987875,
+          "end_mono_ns": 326483108961443,
+          "elapsed_s": 0.766973568,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "inference": {
+        "start_mono_ns": 326483110885421,
+        "end_mono_ns": 326487098881186,
+        "elapsed_s": 3.987995765,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 326487098889402,
+          "end_mono_ns": 326488105631349,
+          "elapsed_s": 1.006741947,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "inference": {
+        "start_mono_ns": 326488107549176,
+        "end_mono_ns": 326490215529398,
+        "elapsed_s": 2.107980222,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 326490215538305,
+          "end_mono_ns": 326491215013105,
+          "elapsed_s": 0.9994748,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 6,
+      "inference": {
+        "start_mono_ns": 326491216611951,
+        "end_mono_ns": 326493500014432,
+        "elapsed_s": 2.283402481,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 326493500023659,
+          "end_mono_ns": 326493564842883,
+          "elapsed_s": 0.064819224,
+          "outcome": "Submitted"
+        }
+      ]
+    }
+  ],
+  "info": {
+    "model_stats": {
+      "instance_cost": 0.056870199999999996,
+      "api_calls": 6
+    },
+    "config": {
+      "agent": {
+        "system_template": "You are a helpful assistant that can interact with a computer shell to solve programming tasks.\n",
+        "instance_template": "<pr_description>\nConsider the following PR description:\n{{task}}\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\n\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n<IMPORTANT>This is an interactive process where you will think and issue AT LEAST ONE command, see the result, then think and issue your next command(s).</important>\n\nFor each response:\n\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide one or more bash tool calls to execute\n\n## Important Boundaries\n\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\n\nYou are operating in an environment where\n\n1. You issue at least one command\n2. The system executes the command(s) in a subshell\n3. You see the result(s)\n4. You write your next command(s)\n\nEach response should include:\n\n1. **Reasoning text** where you explain your analysis and plan\n2. At least one tool call with your command\n\n**CRITICAL REQUIREMENTS:**\n\n- Your response SHOULD include reasoning text explaining what you're doing\n- Your response MUST include AT LEAST ONE bash tool call. You can make MULTIPLE tool calls in a single response when the commands are independent (e.g., searching multiple files, reading different parts of the codebase).\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nI need to understand the Builder-related code. Let me find relevant files and check the project structure.\n\n[Makes multiple bash tool calls: {\"command\": \"ls -la\"}, {\"command\": \"find src -name '*.java' | grep -i builder\"}, {\"command\": \"cat README.md | head -50\"}]\n</example_response>\n\n## Environment Details\n\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- You can use bash commands or invoke any tool that is available in the environment\n- You can also create new tools or scripts to help you with the task\n- If a tool isn't available, you can also install it\n\n## Submission\n\nWhen you've completed your work, you MUST submit your changes as a git patch.\nFollow these steps IN ORDER, with SEPARATE commands:\n\nStep 1: Create the patch file\nRun `git diff -- path/to/file1 path/to/file2 > patch.txt` listing only the source files you modified.\nDo NOT commit your changes.\n\n<IMPORTANT>\nThe patch must only contain changes to the specific source files you modified to fix the issue.\nDo not submit file creations or changes to any of the following files:\n\n- test and reproduction files\n- helper scripts, tests, or tools that you created\n- installation, build, packaging, configuration, or setup scripts unless they are directly part of the issue you were fixing (you can assume that the environment is already set up for your client)\n- binary or compiled files\n</IMPORTANT>\n\nStep 2: Verify your patch\nInspect patch.txt to confirm it only contains your intended changes and headers show `--- a/` and `+++ b/` paths.\n\nStep 3: Submit (EXACT command required)\nYou MUST use this EXACT command to submit:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\n```\n\nIf the command fails (nonzero exit status), it will not submit.\n\n<CRITICAL>\n- Creating/viewing the patch and submitting it MUST be separate commands (not combined with &&).\n- If you modify patch.txt after verifying, you SHOULD verify again before submitting.\n- You CANNOT continue working (reading, editing, testing) in any way on this task after submitting.\n</CRITICAL>\n</instructions>\n",
+        "step_limit": 250,
+        "cost_limit": 3.0,
+        "wall_time_limit_seconds": 0,
+        "max_consecutive_format_errors": 3,
+        "output_path": null
+      },
+      "agent_type": "minisweagent.run.benchmarks.utils.common.ProgressTrackingAgent",
+      "model": {
+        "model_name": "anthropic/claude-opus-5-5",
+        "model_kwargs": {
+          "drop_params": true,
+          "parallel_tool_calls": true,
+          "api_base": "http://127.0.0.1:8200",
+          "api_key": "via-local-relay",
+          "num_retries": 3,
+          "timeout": 1200
+        },
+        "litellm_model_registry": null,
+        "set_cache_control": "default_end",
+        "cost_tracking": "ignore_errors",
+        "format_error_template": "{% if finish_reason is defined and (finish_reason == \"length\" or (finish_reason == \"tool_calls\" and not has_tool_calls)) -%}\nYour previous response reached the output token limit (finish_reason={{ finish_reason }}) before you produced a tool call, so it was cut off. Respond more concisely and finish with exactly one bash tool call. If you need to think more, do so briefly.\n{%- else -%}\nTool call error:\n\n<error>\n{{error}}\n</error>\n\nHere is general guidance on how to submit correct toolcalls:\n\nEvery response needs to use the 'bash' tool at least once to execute commands.\n\nCall the bash tool with your command as the argument:\n- Tool: bash\n- Arguments: {\"command\": \"your_command_here\"}\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that).\n{%- endif %}\n",
+        "observation_template": "{% if output.exception_info -%}\n<exception>{{output.exception_info}}</exception>\n{% endif -%}\n<returncode>{{output.returncode}}</returncode>\n{% if output.output | length < 10000 -%}\n<output>\n{{ output.output -}}\n</output>\n{%- else -%}\n<warning>\nThe output of your last command was too long.\nPlease try a different command that produces less output.\nIf you're looking at a file you can try use head, tail or sed to view a smaller number of lines selectively.\nIf you're using grep or find and it produced too much output, you can use a more selective search pattern.\nIf you really need to see something from the full command's output, you can redirect output to a file and then search in that file.\n</warning>\n{%- set elided_chars = output.output | length - 10000 -%}\n<output_head>\n{{ output.output[:5000] }}\n</output_head>\n<elided_chars>\n{{ elided_chars }} characters elided\n</elided_chars>\n<output_tail>\n{{ output.output[-5000:] }}\n</output_tail>\n{%- endif -%}\n",
+        "multimodal_regex": ""
+      },
+      "model_type": "minisweagent.models.litellm_model.LitellmModel",
+      "environment": {
+        "image": "docker.io/swebench/sweb.eval.x86_64.django_1776_django-15930:latest",
+        "cwd": "/testbed",
+        "env": {
+          "PAGER": "cat",
+          "MANPAGER": "cat",
+          "LESS": "-R",
+          "PIP_PROGRESS_BAR": "off",
+          "TQDM_DISABLE": "1",
+          "BASH_ENV": "/root/.bashrc"
+        },
+        "forward_env": [],
+        "timeout": 60,
+        "interpreter": [
+          "bash",
+          "-c"
+        ],
+        "vcpus": 4,
+        "mem_mb": 8192,
+        "upper_gb": 16,
+        "work_dir": "/tmp/cl-vms"
+      },
+      "environment_type": "minisweagent.environments.extra.microvm.MicroVMEnvironment"
+    },
+    "mini_version": "2.4.6",
+    "exit_status": "Submitted",
+    "submission": "diff --git a/django/db/models/expressions.py b/django/db/models/expressions.py\nindex 822968ef56..e94aff1c18 100644\n--- a/django/db/models/expressions.py\n+++ b/django/db/models/expressions.py\n@@ -1299,6 +1299,14 @@ class When(Expression):\n         template_params = extra_context\n         sql_params = []\n         condition_sql, condition_params = compiler.compile(self.condition)\n+        # Filters that match everything are handled as empty strings in the\n+        # WHERE clause, but in a CASE WHEN expression they must use a predicate\n+        # that's always True.\n+        if condition_sql == \"\":\n+            if connection.features.supports_boolean_expr_in_select_clause:\n+                condition_sql, condition_params = compiler.compile(Value(True))\n+            else:\n+                condition_sql, condition_params = \"1=1\", ()\n         template_params[\"condition\"] = condition_sql\n         sql_params.extend(condition_params)\n         result_sql, result_params = compiler.compile(self.result)\n",
+    "task_timing": {
+      "start_mono_ns": 326468680662709,
+      "environment_ready_mono_ns": 326469186513379,
+      "end_mono_ns": 326493564953972
+    }
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that can interact with a computer shell to solve programming tasks."
+    },
+    {
+      "role": "user",
+      "content": "<pr_description>\nConsider the following PR description:\nCase() crashes with ~Q(pk__in=[]).\nDescription\n\t\nThe following code generates a syntax error. \nUser.objects.annotate(\n\t_a=Case(\n\t\tWhen(~Q(pk__in=[]), then=Value(True)),\n\t\tdefault=Value(False),\n\t\toutput_field=BooleanField(),\n\t)\n).order_by(\"-a\").values(\"pk\")\nThe error is: \nProgrammingError: syntax error at or near \"THEN\"\nLINE 1: ..._user\".\"id\" FROM \"users_user\" ORDER BY CASE WHEN THEN true ...\nThe generated SQL is: \nSELECT \"users_user\".\"id\" FROM \"users_user\" ORDER BY CASE WHEN THEN True ELSE False END ASC\nI expected behavior to annotate all rows with the value True since they all match.\nRelevant because ~Q(pkin=[]) is a sentinel value that is sometimes returned by application code.\n\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\n\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n<IMPORTANT>This is an interactive process where you will think and issue AT LEAST ONE command, see the result, then think and issue your next command(s).</important>\n\nFor each response:\n\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide one or more bash tool calls to execute\n\n## Important Boundaries\n\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\n\nYou are operating in an environment where\n\n1. You issue at least one command\n2. The system executes the command(s) in a subshell\n3. You see the result(s)\n4. You write your next command(s)\n\nEach response should include:\n\n1. **Reasoning text** where you explain your analysis and plan\n2. At least one tool call with your command\n\n**CRITICAL REQUIREMENTS:**\n\n- Your response SHOULD include reasoning text explaining what you're doing\n- Your response MUST include AT LEAST ONE bash tool call. You can make MULTIPLE tool calls in a single response when the commands are independent (e.g., searching multiple files, reading different parts of the codebase).\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nI need to understand the Builder-related code. Let me find relevant files and check the project structure.\n\n[Makes multiple bash tool calls: {\"command\": \"ls -la\"}, {\"command\": \"find src -name '*.java' | grep -i builder\"}, {\"command\": \"cat README.md | head -50\"}]\n</example_response>\n\n## Environment Details\n\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- You can use bash commands or invoke any tool that is available in the environment\n- You can also create new tools or scripts to help you with the task\n- If a tool isn't available, you can also install it\n\n## Submission\n\nWhen you've completed your work, you MUST submit your changes as a git patch.\nFollow these steps IN ORDER, with SEPARATE commands:\n\nStep 1: Create the patch file\nRun `git diff -- path/to/file1 path/to/file2 > patch.txt` listing only the source files you modified.\nDo NOT commit your changes.\n\n<IMPORTANT>\nThe patch must only contain changes to the specific source files you modified to fix the issue.\nDo not submit file creations or changes to any of the following files:\n\n- test and reproduction files\n- helper scripts, tests, or tools that you created\n- installation, build, packaging, configuration, or setup scripts unless they are directly part of the issue you were fixing (you can assume that the environment is already set up for your client)\n- binary or compiled files\n</IMPORTANT>\n\nStep 2: Verify your patch\nInspect patch.txt to confirm it only contains your intended changes and headers show `--- a/` and `+++ b/` paths.\n\nStep 3: Submit (EXACT command required)\nYou MUST use this EXACT command to submit:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\n```\n\nIf the command fails (nonzero exit status), it will not submit.\n\n<CRITICAL>\n- Creating/viewing the patch and submitting it MUST be separate commands (not combined with &&).\n- If you modify patch.txt after verifying, you SHOULD verify again before submitting.\n- You CANNOT continue working (reading, editing, testing) in any way on this task after submitting.\n</CRITICAL>\n</instructions>"
+    },
+    {
+      "content": null,
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && grep -n \\\"class When\\\" -A 90 django/db/models/expressions.py | grep -n \\\"def as_sql\\\" -A 20\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01JZKhree12mDi8AuUQaCAXA",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && grep -n \"class When\" -A 90 django/db/models/expressions.py | grep -n \"def as_sql\" -A 20",
+            "tool_call_id": "toolu_01JZKhree12mDi8AuUQaCAXA"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-0cc268f4-e1ee-484a-8695-2d77f4ef71f0",
+          "created": 1792026232,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": null,
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 0,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && grep -n \\\"class When\\\" -A 90 django/db/models/expressions.py | grep -n \\\"def as_sql\\\" -A 20\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01JZKhree12mDi8AuUQaCAXA",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 92,
+            "prompt_tokens": 2248,
+            "total_tokens": 2340,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 92
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 2244,
+              "cached_tokens": 0,
+              "text_tokens": 4,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 2244,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 2244,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 2244,
+            "cache_read_input_tokens": 0,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.013076,
+        "timestamp": 1792026232.5461943
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\n53:1297-    def as_sql(self, compiler, connection, template=None, **extra_context):\n54-1298-        connection.ops.check_expression_support(self)\n55-1299-        template_params = extra_context\n56-1300-        sql_params = []\n57-1301-        condition_sql, condition_params = compiler.compile(self.condition)\n58-1302-        template_params[\"condition\"] = condition_sql\n59-1303-        sql_params.extend(condition_params)\n60-1304-        result_sql, result_params = compiler.compile(self.result)\n61-1305-        template_params[\"result\"] = result_sql\n62-1306-        sql_params.extend(result_params)\n63-1307-        template = template or self.template\n64-1308-        return template % template_params, sql_params\n65-1309-\n66-1310-    def get_group_by_cols(self, alias=None):\n67-1311-        # This is not a complete expression and cannot be used in GROUP BY.\n68-1312-        cols = []\n69-1313-        for source in self.get_source_expressions():\n70-1314-            cols.extend(source.get_group_by_cols())\n71-1315-        return cols\n72-1316-\n73-1317-\n</output>",
+      "extra": {
+        "raw_output": "53:1297-    def as_sql(self, compiler, connection, template=None, **extra_context):\n54-1298-        connection.ops.check_expression_support(self)\n55-1299-        template_params = extra_context\n56-1300-        sql_params = []\n57-1301-        condition_sql, condition_params = compiler.compile(self.condition)\n58-1302-        template_params[\"condition\"] = condition_sql\n59-1303-        sql_params.extend(condition_params)\n60-1304-        result_sql, result_params = compiler.compile(self.result)\n61-1305-        template_params[\"result\"] = result_sql\n62-1306-        sql_params.extend(result_params)\n63-1307-        template = template or self.template\n64-1308-        return template % template_params, sql_params\n65-1309-\n66-1310-    def get_group_by_cols(self, alias=None):\n67-1311-        # This is not a complete expression and cannot be used in GROUP BY.\n68-1312-        cols = []\n69-1313-        for source in self.get_source_expressions():\n70-1314-            cols.extend(source.get_group_by_cols())\n71-1315-        return cols\n72-1316-\n73-1317-\n",
+        "returncode": 0,
+        "timestamp": 1792026232.6335244,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01JZKhree12mDi8AuUQaCAXA",
+      "role": "tool"
+    },
+    {
+      "content": "I'll apply the fix: when the condition compiles to an empty string (matches everything), substitute an always-true predicate.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 2,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && grep -rn \\\"supports_boolean_expr_in_select_clause\\\" django/db/backends | head && python - <<'EOF'\\np='django/db/models/expressions.py'\\ns=open(p).read()\\nold='''        condition_sql, condition_params = compiler.compile(self.condition)\\n        template_params[\\\"condition\\\"] = condition_sql'''\\nnew='''        condition_sql, condition_params = compiler.compile(self.condition)\\n        # Filters that match everything are handled as empty strings in the\\n        # WHERE clause, but in a CASE WHEN expression they must use a predicate\\n        # that's always True.\\n        if condition_sql == \\\"\\\":\\n            if connection.features.supports_boolean_expr_in_select_clause:\\n                condition_sql, condition_params = compiler.compile(Value(True))\\n            else:\\n                condition_sql, condition_params = \\\"1=1\\\", ()\\n        template_params[\\\"condition\\\"] = condition_sql'''\\nassert old in s\\nopen(p,'w').write(s.replace(old,new))\\nEOF\"}",
+            "name": "bash"
+          },
+          "id": "toolu_018eym3RkxifrYNmPW2d15oe",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "reasoning_content": "",
+      "thinking_blocks": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "CAQSjwkKEAgSGAI4AUIIdGhpbmtpbmcSDLqDLbNAH0FzkGDW0xoMXR6UZU5XUKd98GomIjAFCep5gtYVzZVA4/6ZlaKPb8BEXH+rPg5Ky+mvPZ+9i+uYJ8ORi9G//Gfp7l6/EckqrAjtCUBERa+KXZ/SuIKrvjrdfUGIx5dKCqYxl1f88WC70y+yGYfA1TdV655/IgW+N8wQOmE39ifs0R16rEigNigJ4LH1hi8caB65wOvIl7BNh+56VcHRODyLdS26YZaNA1Ode8CSUWvcVpJAK/KwFgVxJRJc/LxfAFruKMLnTowmVhKrV70r688Gy7z5vu8JlXVU2Te9ZL3uyFsJERmUZ/jcU6iPEvKtZOK4LkCY0/JC6F0I5Oron25hu/Mq4n0E3wyEpARMj1KEnc7UypUMLfC9UIB+J78SguNmsjx2DWKOKe8Sl9Ul4cUBDHYrwF+nPhp/qkmiVEDQyIBr3JXH1654VHMqS/8/QdXHK1RuwRM5PyWPYw90igBDYyD1gv/vFLP+JsERKark4U4HXZvwJqZ/eKaW1DkbZqihqnX/YkWRV/FJazkZpYShj/muDukdx9t19J/68dvLRVnb8MnTNsQPSQKzvJK+734rgRVBEThw1xiSxE9W+TYKlC8UzVZGQJ/6+cNH36Un+b4pu9ADwXqxq4LI0CqkUypuf8qjcLxij4l65+ynsb23c5EZPFLVMD4zy+7Ldo0OYNuNGDD923QhCdeF91qVdXJS6oN7X+SDw9bPr7hSNQmf3LwVXLfI8jK0UvVJXiJXaNQqPRkFpHl18wX1nwoiE7ELASCBWTU6Is87y25mOaMSjZPuhf7KEzd3aQqwvVWE3VBxqeSj4rfA09Nprg8zQ4YaD+RuPTcppujjEzZWqTmzkYBULb9qTopkWjdQqGPx9RMj5yB5VuHnFS64wHOKmrnReUY31q51sdwcnTCv9UxeZklDzCeFrxrJPHOZKmb5iCcdEZBB7RbBRGqjcF4Ma9D8ZXY4/GzqORd6jjaK3Ntn+EOr0JelaT0SL9AaydZLkPbkQjT2zolQt8d8v8H77G9v4CJyLek12sRg0w0E0LigYBCX+7boSZhBynnShgwniFVojDYjyrH2im3r22xxkBoIyaFQD5jsSWSx3PePIWZFXikCwq5OodMrVbKWsqVFcpoYyHoFrRZmylRQYSq3mIWcKHoG3BgjZq3Sq7+wADXrQI0YQg5/kbCVeVJ+7B3AknGwpp7rOrLhdKZZsRcrG8OyRLMy8zWm8XSsqtJcUkkNR78t8U2DQhe2P/PFOKFPyraUjROQ2LWuoAtqhXrO5ZZQoDrTg3nugFoIKOW2FHlC7PynmKjDZaFW6jIRFr1nK99cpEN707t1gmkhA3B5VU9FGqpRKZfXNdEEgq2as11Wxe//4chKim2VJVsEoUEZTWrSIxWDzyYI2Mp3nTq0HTA6Rn3QWd/VUJBoE9G0kuC/RdEUEovzSrdVngLU2iHOwVQ/TFCeS72vr7L5dRu7bUACWWb8p2hrId4pUqU42ZYvGsVC2PJ8sHH312ZOpzg7k8BnfwsYAQ=="
+        }
+      ],
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": [
+          {
+            "signature": "CAQSjwkKEAgSGAI4AUIIdGhpbmtpbmcSDLqDLbNAH0FzkGDW0xoMXR6UZU5XUKd98GomIjAFCep5gtYVzZVA4/6ZlaKPb8BEXH+rPg5Ky+mvPZ+9i+uYJ8ORi9G//Gfp7l6/EckqrAjtCUBERa+KXZ/SuIKrvjrdfUGIx5dKCqYxl1f88WC70y+yGYfA1TdV655/IgW+N8wQOmE39ifs0R16rEigNigJ4LH1hi8caB65wOvIl7BNh+56VcHRODyLdS26YZaNA1Ode8CSUWvcVpJAK/KwFgVxJRJc/LxfAFruKMLnTowmVhKrV70r688Gy7z5vu8JlXVU2Te9ZL3uyFsJERmUZ/jcU6iPEvKtZOK4LkCY0/JC6F0I5Oron25hu/Mq4n0E3wyEpARMj1KEnc7UypUMLfC9UIB+J78SguNmsjx2DWKOKe8Sl9Ul4cUBDHYrwF+nPhp/qkmiVEDQyIBr3JXH1654VHMqS/8/QdXHK1RuwRM5PyWPYw90igBDYyD1gv/vFLP+JsERKark4U4HXZvwJqZ/eKaW1DkbZqihqnX/YkWRV/FJazkZpYShj/muDukdx9t19J/68dvLRVnb8MnTNsQPSQKzvJK+734rgRVBEThw1xiSxE9W+TYKlC8UzVZGQJ/6+cNH36Un+b4pu9ADwXqxq4LI0CqkUypuf8qjcLxij4l65+ynsb23c5EZPFLVMD4zy+7Ldo0OYNuNGDD923QhCdeF91qVdXJS6oN7X+SDw9bPr7hSNQmf3LwVXLfI8jK0UvVJXiJXaNQqPRkFpHl18wX1nwoiE7ELASCBWTU6Is87y25mOaMSjZPuhf7KEzd3aQqwvVWE3VBxqeSj4rfA09Nprg8zQ4YaD+RuPTcppujjEzZWqTmzkYBULb9qTopkWjdQqGPx9RMj5yB5VuHnFS64wHOKmrnReUY31q51sdwcnTCv9UxeZklDzCeFrxrJPHOZKmb5iCcdEZBB7RbBRGqjcF4Ma9D8ZXY4/GzqORd6jjaK3Ntn+EOr0JelaT0SL9AaydZLkPbkQjT2zolQt8d8v8H77G9v4CJyLek12sRg0w0E0LigYBCX+7boSZhBynnShgwniFVojDYjyrH2im3r22xxkBoIyaFQD5jsSWSx3PePIWZFXikCwq5OodMrVbKWsqVFcpoYyHoFrRZmylRQYSq3mIWcKHoG3BgjZq3Sq7+wADXrQI0YQg5/kbCVeVJ+7B3AknGwpp7rOrLhdKZZsRcrG8OyRLMy8zWm8XSsqtJcUkkNR78t8U2DQhe2P/PFOKFPyraUjROQ2LWuoAtqhXrO5ZZQoDrTg3nugFoIKOW2FHlC7PynmKjDZaFW6jIRFr1nK99cpEN707t1gmkhA3B5VU9FGqpRKZfXNdEEgq2as11Wxe//4chKim2VJVsEoUEZTWrSIxWDzyYI2Mp3nTq0HTA6Rn3QWd/VUJBoE9G0kuC/RdEUEovzSrdVngLU2iHOwVQ/TFCeS72vr7L5dRu7bUACWWb8p2hrId4pUqU42ZYvGsVC2PJ8sHH312ZOpzg7k8BnfwsYAQ==",
+            "thinking": "",
+            "type": "thinking"
+          }
+        ]
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && grep -rn \"supports_boolean_expr_in_select_clause\" django/db/backends | head && python - <<'EOF'\np='django/db/models/expressions.py'\ns=open(p).read()\nold='''        condition_sql, condition_params = compiler.compile(self.condition)\n        template_params[\"condition\"] = condition_sql'''\nnew='''        condition_sql, condition_params = compiler.compile(self.condition)\n        # Filters that match everything are handled as empty strings in the\n        # WHERE clause, but in a CASE WHEN expression they must use a predicate\n        # that's always True.\n        if condition_sql == \"\":\n            if connection.features.supports_boolean_expr_in_select_clause:\n                condition_sql, condition_params = compiler.compile(Value(True))\n            else:\n                condition_sql, condition_params = \"1=1\", ()\n        template_params[\"condition\"] = condition_sql'''\nassert old in s\nopen(p,'w').write(s.replace(old,new))\nEOF",
+            "tool_call_id": "toolu_018eym3RkxifrYNmPW2d15oe"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-babeb212-1e26-4118-b80e-102527103d65",
+          "created": 1792026238,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "I'll apply the fix: when the condition compiles to an empty string (matches everything), substitute an always-true predicate.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 2,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && grep -rn \\\"supports_boolean_expr_in_select_clause\\\" django/db/backends | head && python - <<'EOF'\\np='django/db/models/expressions.py'\\ns=open(p).read()\\nold='''        condition_sql, condition_params = compiler.compile(self.condition)\\n        template_params[\\\"condition\\\"] = condition_sql'''\\nnew='''        condition_sql, condition_params = compiler.compile(self.condition)\\n        # Filters that match everything are handled as empty strings in the\\n        # WHERE clause, but in a CASE WHEN expression they must use a predicate\\n        # that's always True.\\n        if condition_sql == \\\"\\\":\\n            if connection.features.supports_boolean_expr_in_select_clause:\\n                condition_sql, condition_params = compiler.compile(Value(True))\\n            else:\\n                condition_sql, condition_params = \\\"1=1\\\", ()\\n        template_params[\\\"condition\\\"] = condition_sql'''\\nassert old in s\\nopen(p,'w').write(s.replace(old,new))\\nEOF\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_018eym3RkxifrYNmPW2d15oe",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "reasoning_content": "",
+                "thinking_blocks": [
+                  {
+                    "type": "thinking",
+                    "thinking": "",
+                    "signature": "CAQSjwkKEAgSGAI4AUIIdGhpbmtpbmcSDLqDLbNAH0FzkGDW0xoMXR6UZU5XUKd98GomIjAFCep5gtYVzZVA4/6ZlaKPb8BEXH+rPg5Ky+mvPZ+9i+uYJ8ORi9G//Gfp7l6/EckqrAjtCUBERa+KXZ/SuIKrvjrdfUGIx5dKCqYxl1f88WC70y+yGYfA1TdV655/IgW+N8wQOmE39ifs0R16rEigNigJ4LH1hi8caB65wOvIl7BNh+56VcHRODyLdS26YZaNA1Ode8CSUWvcVpJAK/KwFgVxJRJc/LxfAFruKMLnTowmVhKrV70r688Gy7z5vu8JlXVU2Te9ZL3uyFsJERmUZ/jcU6iPEvKtZOK4LkCY0/JC6F0I5Oron25hu/Mq4n0E3wyEpARMj1KEnc7UypUMLfC9UIB+J78SguNmsjx2DWKOKe8Sl9Ul4cUBDHYrwF+nPhp/qkmiVEDQyIBr3JXH1654VHMqS/8/QdXHK1RuwRM5PyWPYw90igBDYyD1gv/vFLP+JsERKark4U4HXZvwJqZ/eKaW1DkbZqihqnX/YkWRV/FJazkZpYShj/muDukdx9t19J/68dvLRVnb8MnTNsQPSQKzvJK+734rgRVBEThw1xiSxE9W+TYKlC8UzVZGQJ/6+cNH36Un+b4pu9ADwXqxq4LI0CqkUypuf8qjcLxij4l65+ynsb23c5EZPFLVMD4zy+7Ldo0OYNuNGDD923QhCdeF91qVdXJS6oN7X+SDw9bPr7hSNQmf3LwVXLfI8jK0UvVJXiJXaNQqPRkFpHl18wX1nwoiE7ELASCBWTU6Is87y25mOaMSjZPuhf7KEzd3aQqwvVWE3VBxqeSj4rfA09Nprg8zQ4YaD+RuPTcppujjEzZWqTmzkYBULb9qTopkWjdQqGPx9RMj5yB5VuHnFS64wHOKmrnReUY31q51sdwcnTCv9UxeZklDzCeFrxrJPHOZKmb5iCcdEZBB7RbBRGqjcF4Ma9D8ZXY4/GzqORd6jjaK3Ntn+EOr0JelaT0SL9AaydZLkPbkQjT2zolQt8d8v8H77G9v4CJyLek12sRg0w0E0LigYBCX+7boSZhBynnShgwniFVojDYjyrH2im3r22xxkBoIyaFQD5jsSWSx3PePIWZFXikCwq5OodMrVbKWsqVFcpoYyHoFrRZmylRQYSq3mIWcKHoG3BgjZq3Sq7+wADXrQI0YQg5/kbCVeVJ+7B3AknGwpp7rOrLhdKZZsRcrG8OyRLMy8zWm8XSsqtJcUkkNR78t8U2DQhe2P/PFOKFPyraUjROQ2LWuoAtqhXrO5ZZQoDrTg3nugFoIKOW2FHlC7PynmKjDZaFW6jIRFr1nK99cpEN707t1gmkhA3B5VU9FGqpRKZfXNdEEgq2as11Wxe//4chKim2VJVsEoUEZTWrSIxWDzyYI2Mp3nTq0HTA6Rn3QWd/VUJBoE9G0kuC/RdEUEovzSrdVngLU2iHOwVQ/TFCeS72vr7L5dRu7bUACWWb8p2hrId4pUqU42ZYvGsVC2PJ8sHH312ZOpzg7k8BnfwsYAQ=="
+                  }
+                ],
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": [
+                    {
+                      "signature": "CAQSjwkKEAgSGAI4AUIIdGhpbmtpbmcSDLqDLbNAH0FzkGDW0xoMXR6UZU5XUKd98GomIjAFCep5gtYVzZVA4/6ZlaKPb8BEXH+rPg5Ky+mvPZ+9i+uYJ8ORi9G//Gfp7l6/EckqrAjtCUBERa+KXZ/SuIKrvjrdfUGIx5dKCqYxl1f88WC70y+yGYfA1TdV655/IgW+N8wQOmE39ifs0R16rEigNigJ4LH1hi8caB65wOvIl7BNh+56VcHRODyLdS26YZaNA1Ode8CSUWvcVpJAK/KwFgVxJRJc/LxfAFruKMLnTowmVhKrV70r688Gy7z5vu8JlXVU2Te9ZL3uyFsJERmUZ/jcU6iPEvKtZOK4LkCY0/JC6F0I5Oron25hu/Mq4n0E3wyEpARMj1KEnc7UypUMLfC9UIB+J78SguNmsjx2DWKOKe8Sl9Ul4cUBDHYrwF+nPhp/qkmiVEDQyIBr3JXH1654VHMqS/8/QdXHK1RuwRM5PyWPYw90igBDYyD1gv/vFLP+JsERKark4U4HXZvwJqZ/eKaW1DkbZqihqnX/YkWRV/FJazkZpYShj/muDukdx9t19J/68dvLRVnb8MnTNsQPSQKzvJK+734rgRVBEThw1xiSxE9W+TYKlC8UzVZGQJ/6+cNH36Un+b4pu9ADwXqxq4LI0CqkUypuf8qjcLxij4l65+ynsb23c5EZPFLVMD4zy+7Ldo0OYNuNGDD923QhCdeF91qVdXJS6oN7X+SDw9bPr7hSNQmf3LwVXLfI8jK0UvVJXiJXaNQqPRkFpHl18wX1nwoiE7ELASCBWTU6Is87y25mOaMSjZPuhf7KEzd3aQqwvVWE3VBxqeSj4rfA09Nprg8zQ4YaD+RuPTcppujjEzZWqTmzkYBULb9qTopkWjdQqGPx9RMj5yB5VuHnFS64wHOKmrnReUY31q51sdwcnTCv9UxeZklDzCeFrxrJPHOZKmb5iCcdEZBB7RbBRGqjcF4Ma9D8ZXY4/GzqORd6jjaK3Ntn+EOr0JelaT0SL9AaydZLkPbkQjT2zolQt8d8v8H77G9v4CJyLek12sRg0w0E0LigYBCX+7boSZhBynnShgwniFVojDYjyrH2im3r22xxkBoIyaFQD5jsSWSx3PePIWZFXikCwq5OodMrVbKWsqVFcpoYyHoFrRZmylRQYSq3mIWcKHoG3BgjZq3Sq7+wADXrQI0YQg5/kbCVeVJ+7B3AknGwpp7rOrLhdKZZsRcrG8OyRLMy8zWm8XSsqtJcUkkNR78t8U2DQhe2P/PFOKFPyraUjROQ2LWuoAtqhXrO5ZZQoDrTg3nugFoIKOW2FHlC7PynmKjDZaFW6jIRFr1nK99cpEN707t1gmkhA3B5VU9FGqpRKZfXNdEEgq2as11Wxe//4chKim2VJVsEoUEZTWrSIxWDzyYI2Mp3nTq0HTA6Rn3QWd/VUJBoE9G0kuC/RdEUEovzSrdVngLU2iHOwVQ/TFCeS72vr7L5dRu7bUACWWb8p2hrId4pUqU42ZYvGsVC2PJ8sHH312ZOpzg7k8BnfwsYAQ==",
+                      "thinking": "",
+                      "type": "thinking"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 610,
+            "prompt_tokens": 2751,
+            "total_tokens": 3361,
+            "completion_tokens_details": {
+              "reasoning_tokens": 191,
+              "text_tokens": 419
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 505,
+              "cached_tokens": 2244,
+              "text_tokens": 2,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 505,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 505,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 505,
+            "cache_read_input_tokens": 2244,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.0151818,
+        "timestamp": 1792026238.3074868
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\ndjango/db/backends/base/features.py:304:    supports_boolean_expr_in_select_clause = True\ndjango/db/backends/oracle/features.py:73:    supports_boolean_expr_in_select_clause = False\n</output>",
+      "extra": {
+        "raw_output": "django/db/backends/base/features.py:304:    supports_boolean_expr_in_select_clause = True\ndjango/db/backends/oracle/features.py:73:    supports_boolean_expr_in_select_clause = False\n",
+        "returncode": 0,
+        "timestamp": 1792026238.4021668,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_018eym3RkxifrYNmPW2d15oe",
+      "role": "tool"
+    },
+    {
+      "content": "Now let me verify with a quick test.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed/tests && cat > /tmp/t.py <<'EOF'\\nfrom django.test import TestCase\\nfrom django.db.models import Case, When, Value, BooleanField, Q\\nfrom expressions_case.models import CaseTestModel\\nclass T(TestCase):\\n    def test_it(self):\\n        CaseTestModel.objects.create(integer=1, integer2=1, string=\\\"1\\\")\\n        qs = CaseTestModel.objects.annotate(a=Case(When(~Q(pk__in=[]), then=Value(True)), default=Value(False), output_field=BooleanField())).order_by(\\\"-a\\\")\\n        print(qs.query)\\n        self.assertEqual([o.a for o in qs], [True])\\n        qs = CaseTestModel.objects.annotate(a=Case(When(Q(pk__in=[]), then=Value(True)), default=Value(False), output_field=BooleanField()))\\n        self.assertEqual([o.a for o in qs], [False])\\nEOF\\ncp /tmp/t.py expressions_case/test_tmp.py && python runtests.py expressions_case 2>&1 | tail -8; rm expressions_case/test_tmp.py\"}",
+            "name": "bash"
+          },
+          "id": "toolu_0193XetFnGqEYtAyNAQdiYst",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed/tests && cat > /tmp/t.py <<'EOF'\nfrom django.test import TestCase\nfrom django.db.models import Case, When, Value, BooleanField, Q\nfrom expressions_case.models import CaseTestModel\nclass T(TestCase):\n    def test_it(self):\n        CaseTestModel.objects.create(integer=1, integer2=1, string=\"1\")\n        qs = CaseTestModel.objects.annotate(a=Case(When(~Q(pk__in=[]), then=Value(True)), default=Value(False), output_field=BooleanField())).order_by(\"-a\")\n        print(qs.query)\n        self.assertEqual([o.a for o in qs], [True])\n        qs = CaseTestModel.objects.annotate(a=Case(When(Q(pk__in=[]), then=Value(True)), default=Value(False), output_field=BooleanField()))\n        self.assertEqual([o.a for o in qs], [False])\nEOF\ncp /tmp/t.py expressions_case/test_tmp.py && python runtests.py expressions_case 2>&1 | tail -8; rm expressions_case/test_tmp.py",
+            "tool_call_id": "toolu_0193XetFnGqEYtAyNAQdiYst"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-8036c1f2-9daa-4b6a-9fb9-4124c37a3d7d",
+          "created": 1792026243,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "Now let me verify with a quick test.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed/tests && cat > /tmp/t.py <<'EOF'\\nfrom django.test import TestCase\\nfrom django.db.models import Case, When, Value, BooleanField, Q\\nfrom expressions_case.models import CaseTestModel\\nclass T(TestCase):\\n    def test_it(self):\\n        CaseTestModel.objects.create(integer=1, integer2=1, string=\\\"1\\\")\\n        qs = CaseTestModel.objects.annotate(a=Case(When(~Q(pk__in=[]), then=Value(True)), default=Value(False), output_field=BooleanField())).order_by(\\\"-a\\\")\\n        print(qs.query)\\n        self.assertEqual([o.a for o in qs], [True])\\n        qs = CaseTestModel.objects.annotate(a=Case(When(Q(pk__in=[]), then=Value(True)), default=Value(False), output_field=BooleanField()))\\n        self.assertEqual([o.a for o in qs], [False])\\nEOF\\ncp /tmp/t.py expressions_case/test_tmp.py && python runtests.py expressions_case 2>&1 | tail -8; rm expressions_case/test_tmp.py\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_0193XetFnGqEYtAyNAQdiYst",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 441,
+            "prompt_tokens": 3457,
+            "total_tokens": 3898,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 441
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 706,
+              "cached_tokens": 2749,
+              "text_tokens": 2,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 706,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 706,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 706,
+            "cache_read_input_tokens": 2749,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.0129078,
+        "timestamp": 1792026243.405832
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\nRan 89 tests in 0.090s\n\nOK\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\n</output>",
+      "extra": {
+        "raw_output": "Ran 89 tests in 0.090s\n\nOK\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\nDestroying test database for alias 'default'...\n",
+        "returncode": 0,
+        "timestamp": 1792026244.1746562,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_0193XetFnGqEYtAyNAQdiYst",
+      "role": "tool"
+    },
+    {
+      "content": "Passes, along with the existing expressions_case tests. Let me run a broader set too.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed/tests && python runtests.py expressions queries aggregation annotations 2>&1 | tail -3; cd .. && git diff -- django/db/models/expressions.py > patch.txt && cat patch.txt\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01G1XEFXdpw1vVNB3ixg2ehE",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed/tests && python runtests.py expressions queries aggregation annotations 2>&1 | tail -3; cd .. && git diff -- django/db/models/expressions.py > patch.txt && cat patch.txt",
+            "tool_call_id": "toolu_01G1XEFXdpw1vVNB3ixg2ehE"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-3ab9e8cc-5b32-4555-9e11-12e26628a614",
+          "created": 1792026248,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "Passes, along with the existing expressions_case tests. Let me run a broader set too.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed/tests && python runtests.py expressions queries aggregation annotations 2>&1 | tail -3; cd .. && git diff -- django/db/models/expressions.py > patch.txt && cat patch.txt\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01G1XEFXdpw1vVNB3ixg2ehE",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 148,
+            "prompt_tokens": 4015,
+            "total_tokens": 4163,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 148
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 558,
+              "cached_tokens": 3455,
+              "text_tokens": 2,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 558,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 558,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 558,
+            "cache_read_input_tokens": 3455,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.006449000000000001,
+        "timestamp": 1792026248.1627355
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\nDestroying test database for alias 'other'...\nDestroying test database for alias 'other'...\nDestroying test database for alias 'other'...\ndiff --git a/django/db/models/expressions.py b/django/db/models/expressions.py\nindex 822968ef56..e94aff1c18 100644\n--- a/django/db/models/expressions.py\n+++ b/django/db/models/expressions.py\n@@ -1299,6 +1299,14 @@ class When(Expression):\n         template_params = extra_context\n         sql_params = []\n         condition_sql, condition_params = compiler.compile(self.condition)\n+        # Filters that match everything are handled as empty strings in the\n+        # WHERE clause, but in a CASE WHEN expression they must use a predicate\n+        # that's always True.\n+        if condition_sql == \"\":\n+            if connection.features.supports_boolean_expr_in_select_clause:\n+                condition_sql, condition_params = compiler.compile(Value(True))\n+            else:\n+                condition_sql, condition_params = \"1=1\", ()\n         template_params[\"condition\"] = condition_sql\n         sql_params.extend(condition_params)\n         result_sql, result_params = compiler.compile(self.result)\n</output>",
+      "extra": {
+        "raw_output": "Destroying test database for alias 'other'...\nDestroying test database for alias 'other'...\nDestroying test database for alias 'other'...\ndiff --git a/django/db/models/expressions.py b/django/db/models/expressions.py\nindex 822968ef56..e94aff1c18 100644\n--- a/django/db/models/expressions.py\n+++ b/django/db/models/expressions.py\n@@ -1299,6 +1299,14 @@ class When(Expression):\n         template_params = extra_context\n         sql_params = []\n         condition_sql, condition_params = compiler.compile(self.condition)\n+        # Filters that match everything are handled as empty strings in the\n+        # WHERE clause, but in a CASE WHEN expression they must use a predicate\n+        # that's always True.\n+        if condition_sql == \"\":\n+            if connection.features.supports_boolean_expr_in_select_clause:\n+                condition_sql, condition_params = compiler.compile(Value(True))\n+            else:\n+                condition_sql, condition_params = \"1=1\", ()\n         template_params[\"condition\"] = condition_sql\n         sql_params.extend(condition_params)\n         result_sql, result_params = compiler.compile(self.result)\n",
+        "returncode": 0,
+        "timestamp": 1792026249.1713095,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01G1XEFXdpw1vVNB3ixg2ehE",
+      "role": "tool"
+    },
+    {
+      "content": null,
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed/tests && python runtests.py expressions queries aggregation annotations 2>&1 | grep -E \\\"^(Ran|OK|FAILED)\\\"\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01HHzPbz2GZhQCFaS2tWUHx5",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed/tests && python runtests.py expressions queries aggregation annotations 2>&1 | grep -E \"^(Ran|OK|FAILED)\"",
+            "tool_call_id": "toolu_01HHzPbz2GZhQCFaS2tWUHx5"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-b0f125da-8d07-4b98-983e-6776ee432246",
+          "created": 1792026251,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": null,
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 0,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed/tests && python runtests.py expressions queries aggregation annotations 2>&1 | grep -E \\\"^(Ran|OK|FAILED)\\\"\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01HHzPbz2GZhQCFaS2tWUHx5",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 100,
+            "prompt_tokens": 4587,
+            "total_tokens": 4687,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 100
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 572,
+              "cached_tokens": 4013,
+              "text_tokens": 2,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 572,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 572,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 572,
+            "cache_read_input_tokens": 4013,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.0056706,
+        "timestamp": 1792026251.279384
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\nRan 835 tests in 0.339s\nOK (skipped=15, expected failures=3)\n</output>",
+      "extra": {
+        "raw_output": "Ran 835 tests in 0.339s\nOK (skipped=15, expected failures=3)\n",
+        "returncode": 0,
+        "timestamp": 1792026252.2803888,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01HHzPbz2GZhQCFaS2tWUHx5",
+      "role": "tool"
+    },
+    {
+      "content": null,
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01EQANR7THcUBK9DNCGJSPtp",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt",
+            "tool_call_id": "toolu_01EQANR7THcUBK9DNCGJSPtp"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-855fac1c-88f4-48b8-9198-8b6014276211",
+          "created": 1792026254,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": null,
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 0,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01EQANR7THcUBK9DNCGJSPtp",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 94,
+            "prompt_tokens": 4743,
+            "total_tokens": 4837,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 94
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 156,
+              "cached_tokens": 4585,
+              "text_tokens": 2,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 156,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 156,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 156,
+            "cache_read_input_tokens": 4585,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.003585,
+        "timestamp": 1792026254.5638695
+      }
+    },
+    {
+      "role": "exit",
+      "content": "diff --git a/django/db/models/expressions.py b/django/db/models/expressions.py\nindex 822968ef56..e94aff1c18 100644\n--- a/django/db/models/expressions.py\n+++ b/django/db/models/expressions.py\n@@ -1299,6 +1299,14 @@ class When(Expression):\n         template_params = extra_context\n         sql_params = []\n         condition_sql, condition_params = compiler.compile(self.condition)\n+        # Filters that match everything are handled as empty strings in the\n+        # WHERE clause, but in a CASE WHEN expression they must use a predicate\n+        # that's always True.\n+        if condition_sql == \"\":\n+            if connection.features.supports_boolean_expr_in_select_clause:\n+                condition_sql, condition_params = compiler.compile(Value(True))\n+            else:\n+                condition_sql, condition_params = \"1=1\", ()\n         template_params[\"condition\"] = condition_sql\n         sql_params.extend(condition_params)\n         result_sql, result_params = compiler.compile(self.result)\n",
+      "extra": {
+        "exit_status": "Submitted",
+        "submission": "diff --git a/django/db/models/expressions.py b/django/db/models/expressions.py\nindex 822968ef56..e94aff1c18 100644\n--- a/django/db/models/expressions.py\n+++ b/django/db/models/expressions.py\n@@ -1299,6 +1299,14 @@ class When(Expression):\n         template_params = extra_context\n         sql_params = []\n         condition_sql, condition_params = compiler.compile(self.condition)\n+        # Filters that match everything are handled as empty strings in the\n+        # WHERE clause, but in a CASE WHEN expression they must use a predicate\n+        # that's always True.\n+        if condition_sql == \"\":\n+            if connection.features.supports_boolean_expr_in_select_clause:\n+                condition_sql, condition_params = compiler.compile(Value(True))\n+            else:\n+                condition_sql, condition_params = \"1=1\", ()\n         template_params[\"condition\"] = condition_sql\n         sql_params.extend(condition_params)\n         result_sql, result_params = compiler.compile(self.result)\n"
+      }
+    }
+  ],
+  "trajectory_format": "mini-swe-agent-1.1",
+  "instance_id": "django__django-15930"
+}

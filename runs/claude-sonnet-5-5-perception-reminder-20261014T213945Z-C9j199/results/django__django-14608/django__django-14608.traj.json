@@ -1,0 +1,912 @@
+{
+  "step_timings": [
+    {
+      "step": 1,
+      "inference": {
+        "start_mono_ns": 314380354191978,
+        "end_mono_ns": 314383259794668,
+        "elapsed_s": 2.90560269,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 314383259803144,
+          "end_mono_ns": 314383359059396,
+          "elapsed_s": 0.099256252,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "inference": {
+        "start_mono_ns": 314383361008673,
+        "end_mono_ns": 314386061518143,
+        "elapsed_s": 2.70050947,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 314386061531508,
+          "end_mono_ns": 314386130552169,
+          "elapsed_s": 0.069020661,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "inference": {
+        "start_mono_ns": 314386132589793,
+        "end_mono_ns": 314389795467935,
+        "elapsed_s": 3.662878142,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 314389795480639,
+          "end_mono_ns": 314390401401483,
+          "elapsed_s": 0.605920844,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "inference": {
+        "start_mono_ns": 314390403006902,
+        "end_mono_ns": 314392513623687,
+        "elapsed_s": 2.110616785,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 314392513633044,
+          "end_mono_ns": 314398679423645,
+          "elapsed_s": 6.165790601,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 5,
+      "inference": {
+        "start_mono_ns": 314398680803618,
+        "end_mono_ns": 314401437956047,
+        "elapsed_s": 2.757152429,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 314401437966888,
+          "end_mono_ns": 314401503715496,
+          "elapsed_s": 0.065748608,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 6,
+      "inference": {
+        "start_mono_ns": 314401505104888,
+        "end_mono_ns": 314403507681182,
+        "elapsed_s": 2.002576294,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 314403507690019,
+          "end_mono_ns": 314403571884940,
+          "elapsed_s": 0.064194921,
+          "outcome": "Submitted"
+        }
+      ]
+    }
+  ],
+  "info": {
+    "model_stats": {
+      "instance_cost": 0.0323345,
+      "api_calls": 6
+    },
+    "config": {
+      "agent": {
+        "system_template": "You are a helpful assistant that can interact with a computer shell to solve programming tasks.\n\nBefore writing anything else in each response, estimate how many tokens your complete response will contain (your reasoning text plus all tool calls). Begin the response with this estimate, written exactly as <predicted_output_tokens>N</predicted_output_tokens>, where N is a single integer. Then write the rest of your response as you normally would.\n",
+        "instance_template": "<pr_description>\nConsider the following PR description:\n{{task}}\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\n\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n<IMPORTANT>This is an interactive process where you will think and issue AT LEAST ONE command, see the result, then think and issue your next command(s).</important>\n\nFor each response:\n\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide one or more bash tool calls to execute\n\n## Important Boundaries\n\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\n\nYou are operating in an environment where\n\n1. You issue at least one command\n2. The system executes the command(s) in a subshell\n3. You see the result(s)\n4. You write your next command(s)\n\nEach response should include:\n\n1. **Reasoning text** where you explain your analysis and plan\n2. At least one tool call with your command\n\n**CRITICAL REQUIREMENTS:**\n\n- Your response SHOULD include reasoning text explaining what you're doing\n- Your response MUST include AT LEAST ONE bash tool call. You can make MULTIPLE tool calls in a single response when the commands are independent (e.g., searching multiple files, reading different parts of the codebase).\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nI need to understand the Builder-related code. Let me find relevant files and check the project structure.\n\n[Makes multiple bash tool calls: {\"command\": \"ls -la\"}, {\"command\": \"find src -name '*.java' | grep -i builder\"}, {\"command\": \"cat README.md | head -50\"}]\n</example_response>\n\n## Environment Details\n\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- You can use bash commands or invoke any tool that is available in the environment\n- You can also create new tools or scripts to help you with the task\n- If a tool isn't available, you can also install it\n\n## Submission\n\nWhen you've completed your work, you MUST submit your changes as a git patch.\nFollow these steps IN ORDER, with SEPARATE commands:\n\nStep 1: Create the patch file\nRun `git diff -- path/to/file1 path/to/file2 > patch.txt` listing only the source files you modified.\nDo NOT commit your changes.\n\n<IMPORTANT>\nThe patch must only contain changes to the specific source files you modified to fix the issue.\nDo not submit file creations or changes to any of the following files:\n\n- test and reproduction files\n- helper scripts, tests, or tools that you created\n- installation, build, packaging, configuration, or setup scripts unless they are directly part of the issue you were fixing (you can assume that the environment is already set up for your client)\n- binary or compiled files\n</IMPORTANT>\n\nStep 2: Verify your patch\nInspect patch.txt to confirm it only contains your intended changes and headers show `--- a/` and `+++ b/` paths.\n\nStep 3: Submit (EXACT command required)\nYou MUST use this EXACT command to submit:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\n```\n\nIf the command fails (nonzero exit status), it will not submit.\n\n<CRITICAL>\n- Creating/viewing the patch and submitting it MUST be separate commands (not combined with &&).\n- If you modify patch.txt after verifying, you SHOULD verify again before submitting.\n- You CANNOT continue working (reading, editing, testing) in any way on this task after submitting.\n</CRITICAL>\n</instructions>\n",
+        "step_limit": 250,
+        "cost_limit": 3.0,
+        "wall_time_limit_seconds": 0,
+        "max_consecutive_format_errors": 3,
+        "output_path": null
+      },
+      "agent_type": "minisweagent.run.benchmarks.utils.common.ProgressTrackingAgent",
+      "model": {
+        "model_name": "anthropic/claude-sonnet-5-5",
+        "model_kwargs": {
+          "drop_params": true,
+          "parallel_tool_calls": true,
+          "api_base": "http://127.0.0.1:8200",
+          "api_key": "via-local-relay",
+          "num_retries": 3,
+          "timeout": 1200
+        },
+        "litellm_model_registry": null,
+        "set_cache_control": "default_end",
+        "cost_tracking": "ignore_errors",
+        "format_error_template": "{% if finish_reason is defined and (finish_reason == \"length\" or (finish_reason == \"tool_calls\" and not has_tool_calls)) -%}\nYour previous response reached the output token limit (finish_reason={{ finish_reason }}) before you produced a tool call, so it was cut off. Respond more concisely and finish with exactly one bash tool call. If you need to think more, do so briefly.\n{%- else -%}\nTool call error:\n\n<error>\n{{error}}\n</error>\n\nHere is general guidance on how to submit correct toolcalls:\n\nEvery response needs to use the 'bash' tool at least once to execute commands.\n\nCall the bash tool with your command as the argument:\n- Tool: bash\n- Arguments: {\"command\": \"your_command_here\"}\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that).\n{%- endif %}\n",
+        "observation_template": "{% if output.exception_info -%}\n<exception>{{output.exception_info}}</exception>\n{% endif -%}\n<returncode>{{output.returncode}}</returncode>\n{% if output.output | length < 10000 -%}\n<output>\n{{ output.output -}}\n</output>\n{%- else -%}\n<warning>\nThe output of your last command was too long.\nPlease try a different command that produces less output.\nIf you're looking at a file you can try use head, tail or sed to view a smaller number of lines selectively.\nIf you're using grep or find and it produced too much output, you can use a more selective search pattern.\nIf you really need to see something from the full command's output, you can redirect output to a file and then search in that file.\n</warning>\n{%- set elided_chars = output.output | length - 10000 -%}\n<output_head>\n{{ output.output[:5000] }}\n</output_head>\n<elided_chars>\n{{ elided_chars }} characters elided\n</elided_chars>\n<output_tail>\n{{ output.output[-5000:] }}\n</output_tail>\n{%- endif -%}\n",
+        "multimodal_regex": ""
+      },
+      "model_type": "minisweagent.models.litellm_model.LitellmModel",
+      "environment": {
+        "image": "docker.io/swebench/sweb.eval.x86_64.django_1776_django-14608:latest",
+        "cwd": "/testbed",
+        "env": {
+          "PAGER": "cat",
+          "MANPAGER": "cat",
+          "LESS": "-R",
+          "PIP_PROGRESS_BAR": "off",
+          "TQDM_DISABLE": "1",
+          "BASH_ENV": "/root/.bashrc"
+        },
+        "forward_env": [],
+        "timeout": 60,
+        "interpreter": [
+          "bash",
+          "-c"
+        ],
+        "vcpus": 4,
+        "mem_mb": 8192,
+        "upper_gb": 16,
+        "work_dir": "/tmp/cl-vms"
+      },
+      "environment_type": "minisweagent.environments.extra.microvm.MicroVMEnvironment"
+    },
+    "mini_version": "2.4.6",
+    "exit_status": "Submitted",
+    "submission": "diff --git a/django/forms/formsets.py b/django/forms/formsets.py\nindex a89c35599f..1b0d4554e0 100755\n--- a/django/forms/formsets.py\n+++ b/django/forms/formsets.py\n@@ -333,7 +333,7 @@ class BaseFormSet:\n         self._non_form_errors.\n         \"\"\"\n         self._errors = []\n-        self._non_form_errors = self.error_class()\n+        self._non_form_errors = self.error_class(error_class='nonform')\n         empty_forms_count = 0\n \n         if not self.is_bound:  # Stop further processing.\n@@ -380,7 +380,7 @@ class BaseFormSet:\n             # Give self.clean() a chance to do cross-form validation.\n             self.clean()\n         except ValidationError as e:\n-            self._non_form_errors = self.error_class(e.error_list)\n+            self._non_form_errors = self.error_class(e.error_list, error_class='nonform')\n \n     def clean(self):\n         \"\"\"\ndiff --git a/docs/topics/forms/index.txt b/docs/topics/forms/index.txt\nindex e55b6d7bf2..869361c18d 100755\n--- a/docs/topics/forms/index.txt\n+++ b/docs/topics/forms/index.txt\n@@ -616,6 +616,17 @@ errors. For example, ``{{ form.non_field_errors }}`` would look like:\n         <li>Generic validation error</li>\n     </ul>\n \n+Non-form errors (errors raised by a formset's ``clean()``) will be rendered\n+with an additional class of ``nonform`` to help distinguish them from\n+field-specific and non-field errors. For example,\n+``{{ formset.non_form_errors }}`` would look like:\n+\n+.. code-block:: html+django\n+\n+    <ul class=\"errorlist nonform\">\n+        <li>Generic validation error</li>\n+    </ul>\n+\n See :doc:`/ref/forms/api` for more on errors, styling, and working with form\n attributes in templates.\n \n",
+    "task_timing": {
+      "start_mono_ns": 314379846925282,
+      "environment_ready_mono_ns": 314380353219193,
+      "end_mono_ns": 314403571992774
+    }
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that can interact with a computer shell to solve programming tasks.\n\nBefore writing anything else in each response, estimate how many tokens your complete response will contain (your reasoning text plus all tool calls). Begin the response with this estimate, written exactly as <predicted_output_tokens>N</predicted_output_tokens>, where N is a single integer. Then write the rest of your response as you normally would."
+    },
+    {
+      "role": "user",
+      "content": "<pr_description>\nConsider the following PR description:\nAdd `nonform` CSS class for non form errors in FormSets\nDescription\n\t \n\t\t(last modified by Ties Jan Hefting)\n\t \nForms add the nonfield CSS class for non field errors in ErrorList instances. This is documented in a section on \u200brendering form error messages. Similarly, in FormSets I'd expect to see the nonform CSS class added for non form errors. This would allow a custom ErrorList to make a distinction in form field errors, non field errors (forms) and non form errors (FormSets) when rendering error messages. Therefore I'd suggest to add this nonform CSS class and document it for developers to use.\n\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\n\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n<IMPORTANT>This is an interactive process where you will think and issue AT LEAST ONE command, see the result, then think and issue your next command(s).</important>\n\nFor each response:\n\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide one or more bash tool calls to execute\n\n## Important Boundaries\n\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\n\nYou are operating in an environment where\n\n1. You issue at least one command\n2. The system executes the command(s) in a subshell\n3. You see the result(s)\n4. You write your next command(s)\n\nEach response should include:\n\n1. **Reasoning text** where you explain your analysis and plan\n2. At least one tool call with your command\n\n**CRITICAL REQUIREMENTS:**\n\n- Your response SHOULD include reasoning text explaining what you're doing\n- Your response MUST include AT LEAST ONE bash tool call. You can make MULTIPLE tool calls in a single response when the commands are independent (e.g., searching multiple files, reading different parts of the codebase).\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nI need to understand the Builder-related code. Let me find relevant files and check the project structure.\n\n[Makes multiple bash tool calls: {\"command\": \"ls -la\"}, {\"command\": \"find src -name '*.java' | grep -i builder\"}, {\"command\": \"cat README.md | head -50\"}]\n</example_response>\n\n## Environment Details\n\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- You can use bash commands or invoke any tool that is available in the environment\n- You can also create new tools or scripts to help you with the task\n- If a tool isn't available, you can also install it\n\n## Submission\n\nWhen you've completed your work, you MUST submit your changes as a git patch.\nFollow these steps IN ORDER, with SEPARATE commands:\n\nStep 1: Create the patch file\nRun `git diff -- path/to/file1 path/to/file2 > patch.txt` listing only the source files you modified.\nDo NOT commit your changes.\n\n<IMPORTANT>\nThe patch must only contain changes to the specific source files you modified to fix the issue.\nDo not submit file creations or changes to any of the following files:\n\n- test and reproduction files\n- helper scripts, tests, or tools that you created\n- installation, build, packaging, configuration, or setup scripts unless they are directly part of the issue you were fixing (you can assume that the environment is already set up for your client)\n- binary or compiled files\n</IMPORTANT>\n\nStep 2: Verify your patch\nInspect patch.txt to confirm it only contains your intended changes and headers show `--- a/` and `+++ b/` paths.\n\nStep 3: Submit (EXACT command required)\nYou MUST use this EXACT command to submit:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\n```\n\nIf the command fails (nonzero exit status), it will not submit.\n\n<CRITICAL>\n- Creating/viewing the patch and submitting it MUST be separate commands (not combined with &&).\n- If you modify patch.txt after verifying, you SHOULD verify again before submitting.\n- You CANNOT continue working (reading, editing, testing) in any way on this task after submitting.\n</CRITICAL>\n</instructions>"
+    },
+    {
+      "content": "<predicted_output_tokens>400</predicted_output_tokens>\n\nI'll start by looking at the formsets code.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && grep -n \\\"_non_form_errors\\\\|error_class\\\" django/forms/formsets.py; grep -rn \\\"nonfield\\\" docs | head\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01Y3FSn9Ld6PeDgVAv11Bpb3",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && grep -n \"_non_form_errors\\|error_class\" django/forms/formsets.py; grep -rn \"nonfield\" docs | head",
+            "tool_call_id": "toolu_01Y3FSn9Ld6PeDgVAv11Bpb3"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-5b32af7e-db9d-4108-af23-0e612be2e038",
+          "created": 1792014144,
+          "model": "claude-sonnet-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>400</predicted_output_tokens>\n\nI'll start by looking at the formsets code.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && grep -n \\\"_non_form_errors\\\\|error_class\\\" django/forms/formsets.py; grep -rn \\\"nonfield\\\" docs | head\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01Y3FSn9Ld6PeDgVAv11Bpb3",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 135,
+            "prompt_tokens": 2254,
+            "total_tokens": 2389,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 135
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 2250,
+              "cached_tokens": 0,
+              "text_tokens": 4,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 2250,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 2250,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 2250,
+            "cache_read_input_tokens": 0,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.006983000000000001,
+        "timestamp": 1792014144.323649
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\n67:                 initial=None, error_class=ErrorList, form_kwargs=None,\n76:        self.error_class = error_class\n78:        self._non_form_errors = None\n174:            'error_class': self.error_class,\n296:        if self._non_form_errors is None:\n298:        return self._non_form_errors\n333:        self._non_form_errors.\n336:        self._non_form_errors = self.error_class()\n353:            self._non_form_errors.append(error)\n383:            self._non_form_errors = self.error_class(e.error_list)\ndocs/releases/1.8.txt:340:  ``nonfield`` in its list of classes to distinguish them from field-specific\ndocs/topics/forms/index.txt:610:additional class of ``nonfield`` to help distinguish them from field-specific\ndocs/topics/forms/index.txt:615:    <ul class=\"errorlist nonfield\">\n</output>",
+      "extra": {
+        "raw_output": "67:                 initial=None, error_class=ErrorList, form_kwargs=None,\n76:        self.error_class = error_class\n78:        self._non_form_errors = None\n174:            'error_class': self.error_class,\n296:        if self._non_form_errors is None:\n298:        return self._non_form_errors\n333:        self._non_form_errors.\n336:        self._non_form_errors = self.error_class()\n353:            self._non_form_errors.append(error)\n383:            self._non_form_errors = self.error_class(e.error_list)\ndocs/releases/1.8.txt:340:  ``nonfield`` in its list of classes to distinguish them from field-specific\ndocs/topics/forms/index.txt:610:additional class of ``nonfield`` to help distinguish them from field-specific\ndocs/topics/forms/index.txt:615:    <ul class=\"errorlist nonfield\">\n",
+        "returncode": 0,
+        "timestamp": 1792014144.4247868,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01Y3FSn9Ld6PeDgVAv11Bpb3",
+      "role": "tool"
+    },
+    {
+      "content": "<predicted_output_tokens>350</predicted_output_tokens>\n\nI'll look at the relevant lines and apply the change.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 2,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && sed -n 330,340p django/forms/formsets.py; sed -n 378,386p django/forms/formsets.py; grep -n \\\"nonfield\\\" -B3 -A3 django/forms/forms.py | head -30; sed -n 600,625p docs/topics/forms/index.txt\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01KQdyBR8Avf9S7tfuv84qm1",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "reasoning_content": "",
+      "thinking_blocks": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "CAQSgQUKEAgSGAI4AUIIdGhpbmtpbmcSDGPFA3suL7FpnjV00xoMAPBTuegeQBtxv7SdIjBE0uU9TviRsAfa6aY8vk9kDZdAXdZCMh56Kqy7bMScucXKoc3tIyWeFXKxoKC0ZakqngSyxbeoaC6ZqA74IzmLg5LnWtqd7uiHLH+1qGOG2P2WTXWVJEwzi3oq+PbBmDlk12aqnlb8jLUbuuijj7UllAIObZenwh7lrEb51AVr2ioFaVzKnHvdg2V1/920yQTI3/gjE5/fAOPG+7Tmzvs7rs2icy1FNClRYYnWoa53UuB/HVbbcen9rBcEmv27MIjxRdhck3T+CFIsXLtdOY+mGRZIRMrCBZYpMHAsZxktvaq4xW1POCnc1sTt3wYSCfPzCy8Abs8w8wrYFfUG23IMdc+uAgnZuolopLrstL8u9S8wpyYTFctwyp94pTzQmAKNJflTrC5rc9YTrBPSO9hF9qsrEQLw4xPfWl3q1eSR7QjKCHpqVODcTzKOcnz4tTzHlv4UkxzCvgSkxUGTpufOamzjzvi2TqBodzRq69fxSUUqq4hhagtMiKBlu6hk6LcX/JdrYX5l2ACU/npJ5JZ+8VcMSdqhgwVS1nIeyqy0uZQsOQABwuC1VTpKlFoCJ/9m8It/Tuikzhoa0eJUprDKy1oQmah7RyRL+mDyseMBOyOzR2rxYjhb71j8GUBtAUYJ0Ab68J6SYO99Eiv6oXMcijNqzJ+R5y+nopB1WmWmCsP8S4YLwCdnfV4KoQUUh5GzyuLW2rHm4H4Ja7SOTlsntXpAKRrMlUvBgI/dpp7SbAODaZHx0VhlC6UqB3TlEzPYsrO31lmhJutiXNRvwXLg3RgB"
+        }
+      ],
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": [
+          {
+            "signature": "CAQSgQUKEAgSGAI4AUIIdGhpbmtpbmcSDGPFA3suL7FpnjV00xoMAPBTuegeQBtxv7SdIjBE0uU9TviRsAfa6aY8vk9kDZdAXdZCMh56Kqy7bMScucXKoc3tIyWeFXKxoKC0ZakqngSyxbeoaC6ZqA74IzmLg5LnWtqd7uiHLH+1qGOG2P2WTXWVJEwzi3oq+PbBmDlk12aqnlb8jLUbuuijj7UllAIObZenwh7lrEb51AVr2ioFaVzKnHvdg2V1/920yQTI3/gjE5/fAOPG+7Tmzvs7rs2icy1FNClRYYnWoa53UuB/HVbbcen9rBcEmv27MIjxRdhck3T+CFIsXLtdOY+mGRZIRMrCBZYpMHAsZxktvaq4xW1POCnc1sTt3wYSCfPzCy8Abs8w8wrYFfUG23IMdc+uAgnZuolopLrstL8u9S8wpyYTFctwyp94pTzQmAKNJflTrC5rc9YTrBPSO9hF9qsrEQLw4xPfWl3q1eSR7QjKCHpqVODcTzKOcnz4tTzHlv4UkxzCvgSkxUGTpufOamzjzvi2TqBodzRq69fxSUUqq4hhagtMiKBlu6hk6LcX/JdrYX5l2ACU/npJ5JZ+8VcMSdqhgwVS1nIeyqy0uZQsOQABwuC1VTpKlFoCJ/9m8It/Tuikzhoa0eJUprDKy1oQmah7RyRL+mDyseMBOyOzR2rxYjhb71j8GUBtAUYJ0Ab68J6SYO99Eiv6oXMcijNqzJ+R5y+nopB1WmWmCsP8S4YLwCdnfV4KoQUUh5GzyuLW2rHm4H4Ja7SOTlsntXpAKRrMlUvBgI/dpp7SbAODaZHx0VhlC6UqB3TlEzPYsrO31lmhJutiXNRvwXLg3RgB",
+            "thinking": "",
+            "type": "thinking"
+          }
+        ]
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && sed -n 330,340p django/forms/formsets.py; sed -n 378,386p django/forms/formsets.py; grep -n \"nonfield\" -B3 -A3 django/forms/forms.py | head -30; sed -n 600,625p docs/topics/forms/index.txt",
+            "tool_call_id": "toolu_01KQdyBR8Avf9S7tfuv84qm1"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-b1cc64fb-60f9-4b75-993c-11c87ccce603",
+          "created": 1792014147,
+          "model": "claude-sonnet-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>350</predicted_output_tokens>\n\nI'll look at the relevant lines and apply the change.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 2,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && sed -n 330,340p django/forms/formsets.py; sed -n 378,386p django/forms/formsets.py; grep -n \\\"nonfield\\\" -B3 -A3 django/forms/forms.py | head -30; sed -n 600,625p docs/topics/forms/index.txt\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01KQdyBR8Avf9S7tfuv84qm1",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "reasoning_content": "",
+                "thinking_blocks": [
+                  {
+                    "type": "thinking",
+                    "thinking": "",
+                    "signature": "CAQSgQUKEAgSGAI4AUIIdGhpbmtpbmcSDGPFA3suL7FpnjV00xoMAPBTuegeQBtxv7SdIjBE0uU9TviRsAfa6aY8vk9kDZdAXdZCMh56Kqy7bMScucXKoc3tIyWeFXKxoKC0ZakqngSyxbeoaC6ZqA74IzmLg5LnWtqd7uiHLH+1qGOG2P2WTXWVJEwzi3oq+PbBmDlk12aqnlb8jLUbuuijj7UllAIObZenwh7lrEb51AVr2ioFaVzKnHvdg2V1/920yQTI3/gjE5/fAOPG+7Tmzvs7rs2icy1FNClRYYnWoa53UuB/HVbbcen9rBcEmv27MIjxRdhck3T+CFIsXLtdOY+mGRZIRMrCBZYpMHAsZxktvaq4xW1POCnc1sTt3wYSCfPzCy8Abs8w8wrYFfUG23IMdc+uAgnZuolopLrstL8u9S8wpyYTFctwyp94pTzQmAKNJflTrC5rc9YTrBPSO9hF9qsrEQLw4xPfWl3q1eSR7QjKCHpqVODcTzKOcnz4tTzHlv4UkxzCvgSkxUGTpufOamzjzvi2TqBodzRq69fxSUUqq4hhagtMiKBlu6hk6LcX/JdrYX5l2ACU/npJ5JZ+8VcMSdqhgwVS1nIeyqy0uZQsOQABwuC1VTpKlFoCJ/9m8It/Tuikzhoa0eJUprDKy1oQmah7RyRL+mDyseMBOyOzR2rxYjhb71j8GUBtAUYJ0Ab68J6SYO99Eiv6oXMcijNqzJ+R5y+nopB1WmWmCsP8S4YLwCdnfV4KoQUUh5GzyuLW2rHm4H4Ja7SOTlsntXpAKRrMlUvBgI/dpp7SbAODaZHx0VhlC6UqB3TlEzPYsrO31lmhJutiXNRvwXLg3RgB"
+                  }
+                ],
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": [
+                    {
+                      "signature": "CAQSgQUKEAgSGAI4AUIIdGhpbmtpbmcSDGPFA3suL7FpnjV00xoMAPBTuegeQBtxv7SdIjBE0uU9TviRsAfa6aY8vk9kDZdAXdZCMh56Kqy7bMScucXKoc3tIyWeFXKxoKC0ZakqngSyxbeoaC6ZqA74IzmLg5LnWtqd7uiHLH+1qGOG2P2WTXWVJEwzi3oq+PbBmDlk12aqnlb8jLUbuuijj7UllAIObZenwh7lrEb51AVr2ioFaVzKnHvdg2V1/920yQTI3/gjE5/fAOPG+7Tmzvs7rs2icy1FNClRYYnWoa53UuB/HVbbcen9rBcEmv27MIjxRdhck3T+CFIsXLtdOY+mGRZIRMrCBZYpMHAsZxktvaq4xW1POCnc1sTt3wYSCfPzCy8Abs8w8wrYFfUG23IMdc+uAgnZuolopLrstL8u9S8wpyYTFctwyp94pTzQmAKNJflTrC5rc9YTrBPSO9hF9qsrEQLw4xPfWl3q1eSR7QjKCHpqVODcTzKOcnz4tTzHlv4UkxzCvgSkxUGTpufOamzjzvi2TqBodzRq69fxSUUqq4hhagtMiKBlu6hk6LcX/JdrYX5l2ACU/npJ5JZ+8VcMSdqhgwVS1nIeyqy0uZQsOQABwuC1VTpKlFoCJ/9m8It/Tuikzhoa0eJUprDKy1oQmah7RyRL+mDyseMBOyOzR2rxYjhb71j8GUBtAUYJ0Ab68J6SYO99Eiv6oXMcijNqzJ+R5y+nopB1WmWmCsP8S4YLwCdnfV4KoQUUh5GzyuLW2rHm4H4Ja7SOTlsntXpAKRrMlUvBgI/dpp7SbAODaZHx0VhlC6UqB3TlEzPYsrO31lmhJutiXNRvwXLg3RgB",
+                      "thinking": "",
+                      "type": "thinking"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 206,
+            "prompt_tokens": 2737,
+            "total_tokens": 2943,
+            "completion_tokens_details": {
+              "reasoning_tokens": 18,
+              "text_tokens": 188
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 450,
+              "cached_tokens": 2250,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 450,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 450,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 450,
+            "cache_read_input_tokens": 2250,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.003484,
+        "timestamp": 1792014147.1253712
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\n    def full_clean(self):\n        \"\"\"\n        Clean all of self.data and populate self._errors and\n        self._non_form_errors.\n        \"\"\"\n        self._errors = []\n        self._non_form_errors = self.error_class()\n        empty_forms_count = 0\n\n        if not self.is_bound:  # Stop further processing.\n            return\n                    \"Please submit at least %d forms.\", self.min_num) % self.min_num,\n                    code='too_few_forms')\n            # Give self.clean() a chance to do cross-form validation.\n            self.clean()\n        except ValidationError as e:\n            self._non_form_errors = self.error_class(e.error_list)\n\n    def clean(self):\n        \"\"\"\n314-        field -- i.e., from Form.clean(). Return an empty ErrorList if there\n315-        are none.\n316-        \"\"\"\n317:        return self.errors.get(NON_FIELD_ERRORS, self.error_class(error_class='nonfield'))\n318-\n319-    def add_error(self, field, error):\n320-        \"\"\"\n--\n356-                    raise ValueError(\n357-                        \"'%s' has no field named '%s'.\" % (self.__class__.__name__, field))\n358-                if field == NON_FIELD_ERRORS:\n359:                    self._errors[field] = self.error_class(error_class='nonfield')\n360-                else:\n361-                    self._errors[field] = self.error_class()\n362-            self._errors[field].extend(error_list)\n    {% if form.subject.errors %}\n        <ol>\n        {% for error in form.subject.errors %}\n            <li><strong>{{ error|escape }}</strong></li>\n        {% endfor %}\n        </ol>\n    {% endif %}\n\nNon-field errors (and/or hidden field errors that are rendered at the top of\nthe form when using helpers like ``form.as_p()``) will be rendered with an\nadditional class of ``nonfield`` to help distinguish them from field-specific\nerrors. For example, ``{{ form.non_field_errors }}`` would look like:\n\n.. code-block:: html+django\n\n    <ul class=\"errorlist nonfield\">\n        <li>Generic validation error</li>\n    </ul>\n\nSee :doc:`/ref/forms/api` for more on errors, styling, and working with form\nattributes in templates.\n\nLooping over the form's fields\n------------------------------\n\nIf you're using the same HTML for each of your form fields, you can reduce\n</output>",
+      "extra": {
+        "raw_output": "    def full_clean(self):\n        \"\"\"\n        Clean all of self.data and populate self._errors and\n        self._non_form_errors.\n        \"\"\"\n        self._errors = []\n        self._non_form_errors = self.error_class()\n        empty_forms_count = 0\n\n        if not self.is_bound:  # Stop further processing.\n            return\n                    \"Please submit at least %d forms.\", self.min_num) % self.min_num,\n                    code='too_few_forms')\n            # Give self.clean() a chance to do cross-form validation.\n            self.clean()\n        except ValidationError as e:\n            self._non_form_errors = self.error_class(e.error_list)\n\n    def clean(self):\n        \"\"\"\n314-        field -- i.e., from Form.clean(). Return an empty ErrorList if there\n315-        are none.\n316-        \"\"\"\n317:        return self.errors.get(NON_FIELD_ERRORS, self.error_class(error_class='nonfield'))\n318-\n319-    def add_error(self, field, error):\n320-        \"\"\"\n--\n356-                    raise ValueError(\n357-                        \"'%s' has no field named '%s'.\" % (self.__class__.__name__, field))\n358-                if field == NON_FIELD_ERRORS:\n359:                    self._errors[field] = self.error_class(error_class='nonfield')\n360-                else:\n361-                    self._errors[field] = self.error_class()\n362-            self._errors[field].extend(error_list)\n    {% if form.subject.errors %}\n        <ol>\n        {% for error in form.subject.errors %}\n            <li><strong>{{ error|escape }}</strong></li>\n        {% endfor %}\n        </ol>\n    {% endif %}\n\nNon-field errors (and/or hidden field errors that are rendered at the top of\nthe form when using helpers like ``form.as_p()``) will be rendered with an\nadditional class of ``nonfield`` to help distinguish them from field-specific\nerrors. For example, ``{{ form.non_field_errors }}`` would look like:\n\n.. code-block:: html+django\n\n    <ul class=\"errorlist nonfield\">\n        <li>Generic validation error</li>\n    </ul>\n\nSee :doc:`/ref/forms/api` for more on errors, styling, and working with form\nattributes in templates.\n\nLooping over the form's fields\n------------------------------\n\nIf you're using the same HTML for each of your form fields, you can reduce\n",
+        "returncode": 0,
+        "timestamp": 1792014147.196376,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01KQdyBR8Avf9S7tfuv84qm1",
+      "role": "tool"
+    },
+    {
+      "content": "<predicted_output_tokens>200</predicted_output_tokens>",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && sed -i \\\"s/self._non_form_errors = self.error_class()/self._non_form_errors = self.error_class(error_class='nonform')/; s/self._non_form_errors = self.error_class(e.error_list)/self._non_form_errors = self.error_class(e.error_list, error_class='nonform')/\\\" django/forms/formsets.py && python - <<'EOF'\\nimport re\\np='docs/topics/forms/index.txt'\\ns=open(p).read()\\nold=\\\"\\\"\\\"See :doc:`/ref/forms/api` for more on errors, styling, and working with form\\nattributes in templates.\\n\\\"\\\"\\\"\\nnew=\\\"\\\"\\\"Non-form errors (errors raised by a formset's ``clean()``) will be rendered\\nwith an additional class of ``nonform`` to help distinguish them from\\nfield-specific and non-field errors. For example,\\n``{{ formset.non_form_errors }}`` would look like:\\n\\n.. code-block:: html+django\\n\\n    <ul class=\\\"errorlist nonform\\\">\\n        <li>Generic validation error</li>\\n    </ul>\\n\\n\\\"\\\"\\\"\\nassert old in s\\nopen(p,'w').write(s.replace(old,new+old,1))\\nEOF\\ngit diff; grep -n \\\"def __init__\\\" -A4 django/forms/utils.py | head -20\"}",
+            "name": "bash"
+          },
+          "id": "toolu_013XN3rmbWTEimC6vqpJj7qj",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && sed -i \"s/self._non_form_errors = self.error_class()/self._non_form_errors = self.error_class(error_class='nonform')/; s/self._non_form_errors = self.error_class(e.error_list)/self._non_form_errors = self.error_class(e.error_list, error_class='nonform')/\" django/forms/formsets.py && python - <<'EOF'\nimport re\np='docs/topics/forms/index.txt'\ns=open(p).read()\nold=\"\"\"See :doc:`/ref/forms/api` for more on errors, styling, and working with form\nattributes in templates.\n\"\"\"\nnew=\"\"\"Non-form errors (errors raised by a formset's ``clean()``) will be rendered\nwith an additional class of ``nonform`` to help distinguish them from\nfield-specific and non-field errors. For example,\n``{{ formset.non_form_errors }}`` would look like:\n\n.. code-block:: html+django\n\n    <ul class=\"errorlist nonform\">\n        <li>Generic validation error</li>\n    </ul>\n\n\"\"\"\nassert old in s\nopen(p,'w').write(s.replace(old,new+old,1))\nEOF\ngit diff; grep -n \"def __init__\" -A4 django/forms/utils.py | head -20",
+            "tool_call_id": "toolu_013XN3rmbWTEimC6vqpJj7qj"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-ad9c3322-6793-403d-b3ba-dfc96eb9264e",
+          "created": 1792014150,
+          "model": "claude-sonnet-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>200</predicted_output_tokens>",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && sed -i \\\"s/self._non_form_errors = self.error_class()/self._non_form_errors = self.error_class(error_class='nonform')/; s/self._non_form_errors = self.error_class(e.error_list)/self._non_form_errors = self.error_class(e.error_list, error_class='nonform')/\\\" django/forms/formsets.py && python - <<'EOF'\\nimport re\\np='docs/topics/forms/index.txt'\\ns=open(p).read()\\nold=\\\"\\\"\\\"See :doc:`/ref/forms/api` for more on errors, styling, and working with form\\nattributes in templates.\\n\\\"\\\"\\\"\\nnew=\\\"\\\"\\\"Non-form errors (errors raised by a formset's ``clean()``) will be rendered\\nwith an additional class of ``nonform`` to help distinguish them from\\nfield-specific and non-field errors. For example,\\n``{{ formset.non_form_errors }}`` would look like:\\n\\n.. code-block:: html+django\\n\\n    <ul class=\\\"errorlist nonform\\\">\\n        <li>Generic validation error</li>\\n    </ul>\\n\\n\\\"\\\"\\\"\\nassert old in s\\nopen(p,'w').write(s.replace(old,new+old,1))\\nEOF\\ngit diff; grep -n \\\"def __init__\\\" -A4 django/forms/utils.py | head -20\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_013XN3rmbWTEimC6vqpJj7qj",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 476,
+            "prompt_tokens": 3779,
+            "total_tokens": 4255,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 476
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 1042,
+              "cached_tokens": 2700,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 1042,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 1042,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 1042,
+            "cache_read_input_tokens": 2700,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.007709000000000001,
+        "timestamp": 1792014150.8593214
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\ndiff --git a/django/forms/formsets.py b/django/forms/formsets.py\nindex a89c35599f..1b0d4554e0 100755\n--- a/django/forms/formsets.py\n+++ b/django/forms/formsets.py\n@@ -333,7 +333,7 @@ class BaseFormSet:\n         self._non_form_errors.\n         \"\"\"\n         self._errors = []\n-        self._non_form_errors = self.error_class()\n+        self._non_form_errors = self.error_class(error_class='nonform')\n         empty_forms_count = 0\n \n         if not self.is_bound:  # Stop further processing.\n@@ -380,7 +380,7 @@ class BaseFormSet:\n             # Give self.clean() a chance to do cross-form validation.\n             self.clean()\n         except ValidationError as e:\n-            self._non_form_errors = self.error_class(e.error_list)\n+            self._non_form_errors = self.error_class(e.error_list, error_class='nonform')\n \n     def clean(self):\n         \"\"\"\ndiff --git a/docs/topics/forms/index.txt b/docs/topics/forms/index.txt\nindex e55b6d7bf2..869361c18d 100755\n--- a/docs/topics/forms/index.txt\n+++ b/docs/topics/forms/index.txt\n@@ -616,6 +616,17 @@ errors. For example, ``{{ form.non_field_errors }}`` would look like:\n         <li>Generic validation error</li>\n     </ul>\n \n+Non-form errors (errors raised by a formset's ``clean()``) will be rendered\n+with an additional class of ``nonform`` to help distinguish them from\n+field-specific and non-field errors. For example,\n+``{{ formset.non_form_errors }}`` would look like:\n+\n+.. code-block:: html+django\n+\n+    <ul class=\"errorlist nonform\">\n+        <li>Generic validation error</li>\n+    </ul>\n+\n See :doc:`/ref/forms/api` for more on errors, styling, and working with form\n attributes in templates.\n \n84:    def __init__(self, initlist=None, error_class=None):\n85-        super().__init__(initlist)\n86-\n87-        if error_class is None:\n88-            self.error_class = 'errorlist'\n</output>",
+      "extra": {
+        "raw_output": "diff --git a/django/forms/formsets.py b/django/forms/formsets.py\nindex a89c35599f..1b0d4554e0 100755\n--- a/django/forms/formsets.py\n+++ b/django/forms/formsets.py\n@@ -333,7 +333,7 @@ class BaseFormSet:\n         self._non_form_errors.\n         \"\"\"\n         self._errors = []\n-        self._non_form_errors = self.error_class()\n+        self._non_form_errors = self.error_class(error_class='nonform')\n         empty_forms_count = 0\n \n         if not self.is_bound:  # Stop further processing.\n@@ -380,7 +380,7 @@ class BaseFormSet:\n             # Give self.clean() a chance to do cross-form validation.\n             self.clean()\n         except ValidationError as e:\n-            self._non_form_errors = self.error_class(e.error_list)\n+            self._non_form_errors = self.error_class(e.error_list, error_class='nonform')\n \n     def clean(self):\n         \"\"\"\ndiff --git a/docs/topics/forms/index.txt b/docs/topics/forms/index.txt\nindex e55b6d7bf2..869361c18d 100755\n--- a/docs/topics/forms/index.txt\n+++ b/docs/topics/forms/index.txt\n@@ -616,6 +616,17 @@ errors. For example, ``{{ form.non_field_errors }}`` would look like:\n         <li>Generic validation error</li>\n     </ul>\n \n+Non-form errors (errors raised by a formset's ``clean()``) will be rendered\n+with an additional class of ``nonform`` to help distinguish them from\n+field-specific and non-field errors. For example,\n+``{{ formset.non_form_errors }}`` would look like:\n+\n+.. code-block:: html+django\n+\n+    <ul class=\"errorlist nonform\">\n+        <li>Generic validation error</li>\n+    </ul>\n+\n See :doc:`/ref/forms/api` for more on errors, styling, and working with form\n attributes in templates.\n \n84:    def __init__(self, initlist=None, error_class=None):\n85-        super().__init__(initlist)\n86-\n87-        if error_class is None:\n88-            self.error_class = 'errorlist'\n",
+        "returncode": 0,
+        "timestamp": 1792014151.4667854,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_013XN3rmbWTEimC6vqpJj7qj",
+      "role": "tool"
+    },
+    {
+      "content": "<predicted_output_tokens>250</predicted_output_tokens>\n\nI'll run the formset tests to check for breakage, then write the patch.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed/tests && python runtests.py forms_tests model_formsets generic_inline_admin admin_views.tests -v0 2>&1 | tail -15\"}",
+            "name": "bash"
+          },
+          "id": "toolu_015vy9wgbyyXYoBsed8UMcCF",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed/tests && python runtests.py forms_tests model_formsets generic_inline_admin admin_views.tests -v0 2>&1 | tail -15",
+            "tool_call_id": "toolu_015vy9wgbyyXYoBsed8UMcCF"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-630b4645-85cb-440d-943c-360ed46f1bb1",
+          "created": 1792014153,
+          "model": "claude-sonnet-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>250</predicted_output_tokens>\n\nI'll run the formset tests to check for breakage, then write the patch.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed/tests && python runtests.py forms_tests model_formsets generic_inline_admin admin_views.tests -v0 2>&1 | tail -15\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_015vy9wgbyyXYoBsed8UMcCF",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 147,
+            "prompt_tokens": 5070,
+            "total_tokens": 5217,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 147
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 1291,
+              "cached_tokens": 3742,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 1291,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 1291,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 1291,
+            "cache_read_input_tokens": 3742,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.0051457000000000004,
+        "timestamp": 1792014153.5774782
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\n    self._callTestMethod(testMethod)\n  File \"/opt/miniconda3/envs/testbed/lib/python3.8/unittest/case.py\", line 633, in _callTestMethod\n    method()\n  File \"/testbed/tests/admin_views/tests.py\", line 3351, in test_non_form_errors_is_errorlist\n    self.assertEqual(str(non_form_errors), str(ErrorList([\"Grace is not a Zombie\"])))\n  File \"/opt/miniconda3/envs/testbed/lib/python3.8/unittest/case.py\", line 912, in assertEqual\n    assertion_func(first, second, msg=msg)\n  File \"/opt/miniconda3/envs/testbed/lib/python3.8/unittest/case.py\", line 905, in _baseAssertEqual\n    raise self.failureException(msg)\nAssertionError: '<ul class=\"errorlist nonform\"><li>Grace is not a Zombie</li></ul>' != '<ul class=\"errorlist\"><li>Grace is not a Zombie</li></ul>'\n\n----------------------------------------------------------------------\nRan 1125 tests in 5.151s\n\nFAILED (failures=1, skipped=16)\n</output>",
+      "extra": {
+        "raw_output": "    self._callTestMethod(testMethod)\n  File \"/opt/miniconda3/envs/testbed/lib/python3.8/unittest/case.py\", line 633, in _callTestMethod\n    method()\n  File \"/testbed/tests/admin_views/tests.py\", line 3351, in test_non_form_errors_is_errorlist\n    self.assertEqual(str(non_form_errors), str(ErrorList([\"Grace is not a Zombie\"])))\n  File \"/opt/miniconda3/envs/testbed/lib/python3.8/unittest/case.py\", line 912, in assertEqual\n    assertion_func(first, second, msg=msg)\n  File \"/opt/miniconda3/envs/testbed/lib/python3.8/unittest/case.py\", line 905, in _baseAssertEqual\n    raise self.failureException(msg)\nAssertionError: '<ul class=\"errorlist nonform\"><li>Grace is not a Zombie</li></ul>' != '<ul class=\"errorlist\"><li>Grace is not a Zombie</li></ul>'\n\n----------------------------------------------------------------------\nRan 1125 tests in 5.151s\n\nFAILED (failures=1, skipped=16)\n",
+        "returncode": 0,
+        "timestamp": 1792014159.7445848,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_015vy9wgbyyXYoBsed8UMcCF",
+      "role": "tool"
+    },
+    {
+      "content": null,
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 2,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && git diff -- django/forms/formsets.py docs/topics/forms/index.txt > patch.txt && cat patch.txt | head -50\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01HL2F9hdypxwrxjYaBhDENW",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "reasoning_content": "",
+      "thinking_blocks": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "CAQSxAYKEAgSGAI4AUIIdGhpbmtpbmcSDBCw56nixsoh/a5kTBoMnu5jHO7BJVq/4AvcIjDilowUvTTRWIwecGJsuyRAvqsXlUQ3SinOFe4KA9NusAU2Cy+YYpbLkTWIH3xt5gkq4QX3c59jRfV/9JjSySCVq5B2SlDC4jPLSlKdK/el2mLAO/ThnPDiXS94Nz/hivlOZ2tBW4PcoByzc3HYY+Nrh3+oshfI/GVLQbwHXdSU47A1e9Nq9QpcFnRQGwf+mRlYidk3bCjgDliNUBO1+bJtC9ne3SsXYgYpufYFbvSP27SRr60r5q48Ra7M8A7Gb/Ow5bZAeoz7ZdDnUFOVUUhCm49wRE1KUjd2C63VRgrPBOTuYs8FsP0BFdwsuwD0PBgZtizcqwHhfB6TlLCfjIqHlhyX3AKD0X0c+PGL432iSPMmGlKd/K8M1/Oc/8xKk3eaZNypjPH4gEUbVdOhb1SPaD+isItqcQHPR9T9QulrlqdXIVLzuucoTpgXq596TkV5EzH6MAos7pRydNdt8rZum3NnD6sQMrRj2TlBjCWJ3tAfMz7Wfh9owqDWwn0Hq2rB5usl3yBIIW0Xbj21u5gOrpC7YPlK7RAqjProcznYD8Ai4knxFhZCBT336vQQ9T1ddErQEQ6E49/WrvDc51IzYTbKFUbmOhDFbZD8pX11X+6e5/McDZ+Tu78F/2ryG1S1v6llYU5vBwCMqHtfOGld/9mJ2QPwKzIjHKZMrc+GIIXXl1ctmKZ/A+5613MJOA+MRDXxL20HDUVdEwU9Ygwgm17bGSV+ZQRmwTLqZYcOR5JmiOhW0C0Iefj7B//3xFtS3yC/zrZraUUnPafSQUa7y/Y41w5L0izuPS6+iDNCc2pdfM1HY6TrUiT1yanNjNOfXxKjezdYZabq/X7PPFi4DwH/j4F0hzZSGUdmD4Ddz3cruc1XTZCL7wx/pdgroTuDbJDr1fkhuHk0paA+l2Pe1UEFpSgRi0piHgcgU1uglTFdf8KOM1fyI/PgnaAT9iQ0c3xaCM7LUiy1s6/6XOcOl9pUvAqW/oh9xd5px9Msshdee5OROPKEoncx0kwgJi85oyK2Wp5gNQNMWOgMyt1+mwNGtxgB"
+        },
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "CAQS8wcKEQgSGAI4AUIJbmFycmF0aW9uEgyKjwugSDnMGErxmQYaDPvZhb84sx+Hm7gniCIw/JA25NTo2DFHzOe18dvjfYWqW5FQGz01dc4e9NRTID1w4iD2dJ1MbulDqr3swYLdKo8HOMUA4+aug+TeY8N1He4Gqf9RdaoFjCv0KBPxJSxNdu9HKu72K3oUzOLO1F9mC5tCShULsYP79PHj44Cw3dj7OkCNwiH0Rs6F2ADRHXun0hfZnBpIgbaiXw9W0bja+R9AU0KmcKYzXWayZXC3Pvxe9fierJ1chK3XHioV8pDW9HERmxTUj38Jhqn39Yo5jbW979wOjtI2XvlS+Z1/NoBaywaPZHQ9EtZ7vwnkuVJrXSdxIa+bfnyAg+A8CF4AjOA2OglFjmN25dXcYWFwLPBTL+BADjKVN1af6v0EWwa87xi1TN7GPF5tOt2TS/GJ7Q+KIaj3ur159FnJAb1Qp9Bx2Jd5pTYGowyD6lljjRrl3in/c9Wxe/JJqT7Lm4effqaMHRDVueJflCHjdzoOoyqgfOKtu381sb1QKNEhC9fsNHtBV7HZZ8rWNy8uPuXfOF6yQTMqqSH66d+3HKnRGpva0s0NepfxEQfP+VCQpnIw+aIfiVksysh06lNdePyezyBZQtJxtCqP8aQpECdJ7eVsSLq4U7ojeiz6cj9WZzsQPEl4JidTb8UC6lTQSWVygexzLMpVseG2qgmQsD7+dpfx5y2opRjBS2Kb+bXSpt6Db72Y9IHctRzZXhgOWRqVlI+wcrlawbWq0vQ59QbYriESCazHTVmRpzRi0N5R3Wa7+tJlA6J/EVbBCC59tbrac9BaQz+AbZ61XVmrvoBHIEQ1abM1/mD4RBVm2uDQ79Ll03RHk0qtW6daX6cGruL5DCebfM7UHvrKWwXJVV3JngPdHklYG3qs+sdrVZpDjJA/JpgRaXPGr5BsUg0ErSpQssq+cViYXysP5XpemxlhQ7xP2SLquDtTOvFbd3fycaSGG2PveTKKkT0Q1rp8A+5K4+QDYVIuqi9OfsWiUtwknDu+/iJTdOrknzF7zAULMqDaeZQCHaP1/0KA1jjJAl/Ype0uhfJFzze68ErWSllIPxvWwnVohyhUvF+4ChOY38M+7EHSJN4VKeK2ziz+1HpW85bntgWx+GfDhSobgbKNMMFDyPcU7f50hXsRN8PcCP5K8sJalrdVDvfgl0+5i7Fy3uPEaQdFgKYPE5s2sIsE/0t2D8+JU7Yx2EDbQpoWymCURdefuHw4ydVsC9dxGfTN/N0H1/dwBdzezw1OQl62HR4d3Ybafs0p+YALZ6k/nS+yAk4RQSgFrl26B3fVbeB0LOYYAQ=="
+        }
+      ],
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": [
+          {
+            "signature": "CAQSxAYKEAgSGAI4AUIIdGhpbmtpbmcSDBCw56nixsoh/a5kTBoMnu5jHO7BJVq/4AvcIjDilowUvTTRWIwecGJsuyRAvqsXlUQ3SinOFe4KA9NusAU2Cy+YYpbLkTWIH3xt5gkq4QX3c59jRfV/9JjSySCVq5B2SlDC4jPLSlKdK/el2mLAO/ThnPDiXS94Nz/hivlOZ2tBW4PcoByzc3HYY+Nrh3+oshfI/GVLQbwHXdSU47A1e9Nq9QpcFnRQGwf+mRlYidk3bCjgDliNUBO1+bJtC9ne3SsXYgYpufYFbvSP27SRr60r5q48Ra7M8A7Gb/Ow5bZAeoz7ZdDnUFOVUUhCm49wRE1KUjd2C63VRgrPBOTuYs8FsP0BFdwsuwD0PBgZtizcqwHhfB6TlLCfjIqHlhyX3AKD0X0c+PGL432iSPMmGlKd/K8M1/Oc/8xKk3eaZNypjPH4gEUbVdOhb1SPaD+isItqcQHPR9T9QulrlqdXIVLzuucoTpgXq596TkV5EzH6MAos7pRydNdt8rZum3NnD6sQMrRj2TlBjCWJ3tAfMz7Wfh9owqDWwn0Hq2rB5usl3yBIIW0Xbj21u5gOrpC7YPlK7RAqjProcznYD8Ai4knxFhZCBT336vQQ9T1ddErQEQ6E49/WrvDc51IzYTbKFUbmOhDFbZD8pX11X+6e5/McDZ+Tu78F/2ryG1S1v6llYU5vBwCMqHtfOGld/9mJ2QPwKzIjHKZMrc+GIIXXl1ctmKZ/A+5613MJOA+MRDXxL20HDUVdEwU9Ygwgm17bGSV+ZQRmwTLqZYcOR5JmiOhW0C0Iefj7B//3xFtS3yC/zrZraUUnPafSQUa7y/Y41w5L0izuPS6+iDNCc2pdfM1HY6TrUiT1yanNjNOfXxKjezdYZabq/X7PPFi4DwH/j4F0hzZSGUdmD4Ddz3cruc1XTZCL7wx/pdgroTuDbJDr1fkhuHk0paA+l2Pe1UEFpSgRi0piHgcgU1uglTFdf8KOM1fyI/PgnaAT9iQ0c3xaCM7LUiy1s6/6XOcOl9pUvAqW/oh9xd5px9Msshdee5OROPKEoncx0kwgJi85oyK2Wp5gNQNMWOgMyt1+mwNGtxgB",
+            "thinking": "",
+            "type": "thinking"
+          },
+          {
+            "signature": "CAQS8wcKEQgSGAI4AUIJbmFycmF0aW9uEgyKjwugSDnMGErxmQYaDPvZhb84sx+Hm7gniCIw/JA25NTo2DFHzOe18dvjfYWqW5FQGz01dc4e9NRTID1w4iD2dJ1MbulDqr3swYLdKo8HOMUA4+aug+TeY8N1He4Gqf9RdaoFjCv0KBPxJSxNdu9HKu72K3oUzOLO1F9mC5tCShULsYP79PHj44Cw3dj7OkCNwiH0Rs6F2ADRHXun0hfZnBpIgbaiXw9W0bja+R9AU0KmcKYzXWayZXC3Pvxe9fierJ1chK3XHioV8pDW9HERmxTUj38Jhqn39Yo5jbW979wOjtI2XvlS+Z1/NoBaywaPZHQ9EtZ7vwnkuVJrXSdxIa+bfnyAg+A8CF4AjOA2OglFjmN25dXcYWFwLPBTL+BADjKVN1af6v0EWwa87xi1TN7GPF5tOt2TS/GJ7Q+KIaj3ur159FnJAb1Qp9Bx2Jd5pTYGowyD6lljjRrl3in/c9Wxe/JJqT7Lm4effqaMHRDVueJflCHjdzoOoyqgfOKtu381sb1QKNEhC9fsNHtBV7HZZ8rWNy8uPuXfOF6yQTMqqSH66d+3HKnRGpva0s0NepfxEQfP+VCQpnIw+aIfiVksysh06lNdePyezyBZQtJxtCqP8aQpECdJ7eVsSLq4U7ojeiz6cj9WZzsQPEl4JidTb8UC6lTQSWVygexzLMpVseG2qgmQsD7+dpfx5y2opRjBS2Kb+bXSpt6Db72Y9IHctRzZXhgOWRqVlI+wcrlawbWq0vQ59QbYriESCazHTVmRpzRi0N5R3Wa7+tJlA6J/EVbBCC59tbrac9BaQz+AbZ61XVmrvoBHIEQ1abM1/mD4RBVm2uDQ79Ll03RHk0qtW6daX6cGruL5DCebfM7UHvrKWwXJVV3JngPdHklYG3qs+sdrVZpDjJA/JpgRaXPGr5BsUg0ErSpQssq+cViYXysP5XpemxlhQ7xP2SLquDtTOvFbd3fycaSGG2PveTKKkT0Q1rp8A+5K4+QDYVIuqi9OfsWiUtwknDu+/iJTdOrknzF7zAULMqDaeZQCHaP1/0KA1jjJAl/Ype0uhfJFzze68ErWSllIPxvWwnVohyhUvF+4ChOY38M+7EHSJN4VKeK2ziz+1HpW85bntgWx+GfDhSobgbKNMMFDyPcU7f50hXsRN8PcCP5K8sJalrdVDvfgl0+5i7Fy3uPEaQdFgKYPE5s2sIsE/0t2D8+JU7Yx2EDbQpoWymCURdefuHw4ydVsC9dxGfTN/N0H1/dwBdzezw1OQl62HR4d3Ybafs0p+YALZ6k/nS+yAk4RQSgFrl26B3fVbeB0LOYYAQ==",
+            "thinking": "",
+            "type": "thinking"
+          }
+        ]
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && git diff -- django/forms/formsets.py docs/topics/forms/index.txt > patch.txt && cat patch.txt | head -50",
+            "tool_call_id": "toolu_01HL2F9hdypxwrxjYaBhDENW"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-40efd180-efb0-4772-b3ab-4f37dbb2d894",
+          "created": 1792014162,
+          "model": "claude-sonnet-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": null,
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 2,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && git diff -- django/forms/formsets.py docs/topics/forms/index.txt > patch.txt && cat patch.txt | head -50\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01HL2F9hdypxwrxjYaBhDENW",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "reasoning_content": "",
+                "thinking_blocks": [
+                  {
+                    "type": "thinking",
+                    "thinking": "",
+                    "signature": "CAQSxAYKEAgSGAI4AUIIdGhpbmtpbmcSDBCw56nixsoh/a5kTBoMnu5jHO7BJVq/4AvcIjDilowUvTTRWIwecGJsuyRAvqsXlUQ3SinOFe4KA9NusAU2Cy+YYpbLkTWIH3xt5gkq4QX3c59jRfV/9JjSySCVq5B2SlDC4jPLSlKdK/el2mLAO/ThnPDiXS94Nz/hivlOZ2tBW4PcoByzc3HYY+Nrh3+oshfI/GVLQbwHXdSU47A1e9Nq9QpcFnRQGwf+mRlYidk3bCjgDliNUBO1+bJtC9ne3SsXYgYpufYFbvSP27SRr60r5q48Ra7M8A7Gb/Ow5bZAeoz7ZdDnUFOVUUhCm49wRE1KUjd2C63VRgrPBOTuYs8FsP0BFdwsuwD0PBgZtizcqwHhfB6TlLCfjIqHlhyX3AKD0X0c+PGL432iSPMmGlKd/K8M1/Oc/8xKk3eaZNypjPH4gEUbVdOhb1SPaD+isItqcQHPR9T9QulrlqdXIVLzuucoTpgXq596TkV5EzH6MAos7pRydNdt8rZum3NnD6sQMrRj2TlBjCWJ3tAfMz7Wfh9owqDWwn0Hq2rB5usl3yBIIW0Xbj21u5gOrpC7YPlK7RAqjProcznYD8Ai4knxFhZCBT336vQQ9T1ddErQEQ6E49/WrvDc51IzYTbKFUbmOhDFbZD8pX11X+6e5/McDZ+Tu78F/2ryG1S1v6llYU5vBwCMqHtfOGld/9mJ2QPwKzIjHKZMrc+GIIXXl1ctmKZ/A+5613MJOA+MRDXxL20HDUVdEwU9Ygwgm17bGSV+ZQRmwTLqZYcOR5JmiOhW0C0Iefj7B//3xFtS3yC/zrZraUUnPafSQUa7y/Y41w5L0izuPS6+iDNCc2pdfM1HY6TrUiT1yanNjNOfXxKjezdYZabq/X7PPFi4DwH/j4F0hzZSGUdmD4Ddz3cruc1XTZCL7wx/pdgroTuDbJDr1fkhuHk0paA+l2Pe1UEFpSgRi0piHgcgU1uglTFdf8KOM1fyI/PgnaAT9iQ0c3xaCM7LUiy1s6/6XOcOl9pUvAqW/oh9xd5px9Msshdee5OROPKEoncx0kwgJi85oyK2Wp5gNQNMWOgMyt1+mwNGtxgB"
+                  },
+                  {
+                    "type": "thinking",
+                    "thinking": "",
+                    "signature": "CAQS8wcKEQgSGAI4AUIJbmFycmF0aW9uEgyKjwugSDnMGErxmQYaDPvZhb84sx+Hm7gniCIw/JA25NTo2DFHzOe18dvjfYWqW5FQGz01dc4e9NRTID1w4iD2dJ1MbulDqr3swYLdKo8HOMUA4+aug+TeY8N1He4Gqf9RdaoFjCv0KBPxJSxNdu9HKu72K3oUzOLO1F9mC5tCShULsYP79PHj44Cw3dj7OkCNwiH0Rs6F2ADRHXun0hfZnBpIgbaiXw9W0bja+R9AU0KmcKYzXWayZXC3Pvxe9fierJ1chK3XHioV8pDW9HERmxTUj38Jhqn39Yo5jbW979wOjtI2XvlS+Z1/NoBaywaPZHQ9EtZ7vwnkuVJrXSdxIa+bfnyAg+A8CF4AjOA2OglFjmN25dXcYWFwLPBTL+BADjKVN1af6v0EWwa87xi1TN7GPF5tOt2TS/GJ7Q+KIaj3ur159FnJAb1Qp9Bx2Jd5pTYGowyD6lljjRrl3in/c9Wxe/JJqT7Lm4effqaMHRDVueJflCHjdzoOoyqgfOKtu381sb1QKNEhC9fsNHtBV7HZZ8rWNy8uPuXfOF6yQTMqqSH66d+3HKnRGpva0s0NepfxEQfP+VCQpnIw+aIfiVksysh06lNdePyezyBZQtJxtCqP8aQpECdJ7eVsSLq4U7ojeiz6cj9WZzsQPEl4JidTb8UC6lTQSWVygexzLMpVseG2qgmQsD7+dpfx5y2opRjBS2Kb+bXSpt6Db72Y9IHctRzZXhgOWRqVlI+wcrlawbWq0vQ59QbYriESCazHTVmRpzRi0N5R3Wa7+tJlA6J/EVbBCC59tbrac9BaQz+AbZ61XVmrvoBHIEQ1abM1/mD4RBVm2uDQ79Ll03RHk0qtW6daX6cGruL5DCebfM7UHvrKWwXJVV3JngPdHklYG3qs+sdrVZpDjJA/JpgRaXPGr5BsUg0ErSpQssq+cViYXysP5XpemxlhQ7xP2SLquDtTOvFbd3fycaSGG2PveTKKkT0Q1rp8A+5K4+QDYVIuqi9OfsWiUtwknDu+/iJTdOrknzF7zAULMqDaeZQCHaP1/0KA1jjJAl/Ype0uhfJFzze68ErWSllIPxvWwnVohyhUvF+4ChOY38M+7EHSJN4VKeK2ziz+1HpW85bntgWx+GfDhSobgbKNMMFDyPcU7f50hXsRN8PcCP5K8sJalrdVDvfgl0+5i7Fy3uPEaQdFgKYPE5s2sIsE/0t2D8+JU7Yx2EDbQpoWymCURdefuHw4ydVsC9dxGfTN/N0H1/dwBdzezw1OQl62HR4d3Ybafs0p+YALZ6k/nS+yAk4RQSgFrl26B3fVbeB0LOYYAQ=="
+                  }
+                ],
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": [
+                    {
+                      "signature": "CAQSxAYKEAgSGAI4AUIIdGhpbmtpbmcSDBCw56nixsoh/a5kTBoMnu5jHO7BJVq/4AvcIjDilowUvTTRWIwecGJsuyRAvqsXlUQ3SinOFe4KA9NusAU2Cy+YYpbLkTWIH3xt5gkq4QX3c59jRfV/9JjSySCVq5B2SlDC4jPLSlKdK/el2mLAO/ThnPDiXS94Nz/hivlOZ2tBW4PcoByzc3HYY+Nrh3+oshfI/GVLQbwHXdSU47A1e9Nq9QpcFnRQGwf+mRlYidk3bCjgDliNUBO1+bJtC9ne3SsXYgYpufYFbvSP27SRr60r5q48Ra7M8A7Gb/Ow5bZAeoz7ZdDnUFOVUUhCm49wRE1KUjd2C63VRgrPBOTuYs8FsP0BFdwsuwD0PBgZtizcqwHhfB6TlLCfjIqHlhyX3AKD0X0c+PGL432iSPMmGlKd/K8M1/Oc/8xKk3eaZNypjPH4gEUbVdOhb1SPaD+isItqcQHPR9T9QulrlqdXIVLzuucoTpgXq596TkV5EzH6MAos7pRydNdt8rZum3NnD6sQMrRj2TlBjCWJ3tAfMz7Wfh9owqDWwn0Hq2rB5usl3yBIIW0Xbj21u5gOrpC7YPlK7RAqjProcznYD8Ai4knxFhZCBT336vQQ9T1ddErQEQ6E49/WrvDc51IzYTbKFUbmOhDFbZD8pX11X+6e5/McDZ+Tu78F/2ryG1S1v6llYU5vBwCMqHtfOGld/9mJ2QPwKzIjHKZMrc+GIIXXl1ctmKZ/A+5613MJOA+MRDXxL20HDUVdEwU9Ygwgm17bGSV+ZQRmwTLqZYcOR5JmiOhW0C0Iefj7B//3xFtS3yC/zrZraUUnPafSQUa7y/Y41w5L0izuPS6+iDNCc2pdfM1HY6TrUiT1yanNjNOfXxKjezdYZabq/X7PPFi4DwH/j4F0hzZSGUdmD4Ddz3cruc1XTZCL7wx/pdgroTuDbJDr1fkhuHk0paA+l2Pe1UEFpSgRi0piHgcgU1uglTFdf8KOM1fyI/PgnaAT9iQ0c3xaCM7LUiy1s6/6XOcOl9pUvAqW/oh9xd5px9Msshdee5OROPKEoncx0kwgJi85oyK2Wp5gNQNMWOgMyt1+mwNGtxgB",
+                      "thinking": "",
+                      "type": "thinking"
+                    },
+                    {
+                      "signature": "CAQS8wcKEQgSGAI4AUIJbmFycmF0aW9uEgyKjwugSDnMGErxmQYaDPvZhb84sx+Hm7gniCIw/JA25NTo2DFHzOe18dvjfYWqW5FQGz01dc4e9NRTID1w4iD2dJ1MbulDqr3swYLdKo8HOMUA4+aug+TeY8N1He4Gqf9RdaoFjCv0KBPxJSxNdu9HKu72K3oUzOLO1F9mC5tCShULsYP79PHj44Cw3dj7OkCNwiH0Rs6F2ADRHXun0hfZnBpIgbaiXw9W0bja+R9AU0KmcKYzXWayZXC3Pvxe9fierJ1chK3XHioV8pDW9HERmxTUj38Jhqn39Yo5jbW979wOjtI2XvlS+Z1/NoBaywaPZHQ9EtZ7vwnkuVJrXSdxIa+bfnyAg+A8CF4AjOA2OglFjmN25dXcYWFwLPBTL+BADjKVN1af6v0EWwa87xi1TN7GPF5tOt2TS/GJ7Q+KIaj3ur159FnJAb1Qp9Bx2Jd5pTYGowyD6lljjRrl3in/c9Wxe/JJqT7Lm4effqaMHRDVueJflCHjdzoOoyqgfOKtu381sb1QKNEhC9fsNHtBV7HZZ8rWNy8uPuXfOF6yQTMqqSH66d+3HKnRGpva0s0NepfxEQfP+VCQpnIw+aIfiVksysh06lNdePyezyBZQtJxtCqP8aQpECdJ7eVsSLq4U7ojeiz6cj9WZzsQPEl4JidTb8UC6lTQSWVygexzLMpVseG2qgmQsD7+dpfx5y2opRjBS2Kb+bXSpt6Db72Y9IHctRzZXhgOWRqVlI+wcrlawbWq0vQ59QbYriESCazHTVmRpzRi0N5R3Wa7+tJlA6J/EVbBCC59tbrac9BaQz+AbZ61XVmrvoBHIEQ1abM1/mD4RBVm2uDQ79Ll03RHk0qtW6daX6cGruL5DCebfM7UHvrKWwXJVV3JngPdHklYG3qs+sdrVZpDjJA/JpgRaXPGr5BsUg0ErSpQssq+cViYXysP5XpemxlhQ7xP2SLquDtTOvFbd3fycaSGG2PveTKKkT0Q1rp8A+5K4+QDYVIuqi9OfsWiUtwknDu+/iJTdOrknzF7zAULMqDaeZQCHaP1/0KA1jjJAl/Ype0uhfJFzze68ErWSllIPxvWwnVohyhUvF+4ChOY38M+7EHSJN4VKeK2ziz+1HpW85bntgWx+GfDhSobgbKNMMFDyPcU7f50hXsRN8PcCP5K8sJalrdVDvfgl0+5i7Fy3uPEaQdFgKYPE5s2sIsE/0t2D8+JU7Yx2EDbQpoWymCURdefuHw4ydVsC9dxGfTN/N0H1/dwBdzezw1OQl62HR4d3Ybafs0p+YALZ6k/nS+yAk4RQSgFrl26B3fVbeB0LOYYAQ==",
+                      "thinking": "",
+                      "type": "thinking"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 241,
+            "prompt_tokens": 5677,
+            "total_tokens": 5918,
+            "completion_tokens_details": {
+              "reasoning_tokens": 144,
+              "text_tokens": 97
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 607,
+              "cached_tokens": 5033,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 607,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 607,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 607,
+            "cache_read_input_tokens": 5033,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.0045048,
+        "timestamp": 1792014162.5018108
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\ndiff --git a/django/forms/formsets.py b/django/forms/formsets.py\nindex a89c35599f..1b0d4554e0 100755\n--- a/django/forms/formsets.py\n+++ b/django/forms/formsets.py\n@@ -333,7 +333,7 @@ class BaseFormSet:\n         self._non_form_errors.\n         \"\"\"\n         self._errors = []\n-        self._non_form_errors = self.error_class()\n+        self._non_form_errors = self.error_class(error_class='nonform')\n         empty_forms_count = 0\n \n         if not self.is_bound:  # Stop further processing.\n@@ -380,7 +380,7 @@ class BaseFormSet:\n             # Give self.clean() a chance to do cross-form validation.\n             self.clean()\n         except ValidationError as e:\n-            self._non_form_errors = self.error_class(e.error_list)\n+            self._non_form_errors = self.error_class(e.error_list, error_class='nonform')\n \n     def clean(self):\n         \"\"\"\ndiff --git a/docs/topics/forms/index.txt b/docs/topics/forms/index.txt\nindex e55b6d7bf2..869361c18d 100755\n--- a/docs/topics/forms/index.txt\n+++ b/docs/topics/forms/index.txt\n@@ -616,6 +616,17 @@ errors. For example, ``{{ form.non_field_errors }}`` would look like:\n         <li>Generic validation error</li>\n     </ul>\n \n+Non-form errors (errors raised by a formset's ``clean()``) will be rendered\n+with an additional class of ``nonform`` to help distinguish them from\n+field-specific and non-field errors. For example,\n+``{{ formset.non_form_errors }}`` would look like:\n+\n+.. code-block:: html+django\n+\n+    <ul class=\"errorlist nonform\">\n+        <li>Generic validation error</li>\n+    </ul>\n+\n See :doc:`/ref/forms/api` for more on errors, styling, and working with form\n attributes in templates.\n \n</output>",
+      "extra": {
+        "raw_output": "diff --git a/django/forms/formsets.py b/django/forms/formsets.py\nindex a89c35599f..1b0d4554e0 100755\n--- a/django/forms/formsets.py\n+++ b/django/forms/formsets.py\n@@ -333,7 +333,7 @@ class BaseFormSet:\n         self._non_form_errors.\n         \"\"\"\n         self._errors = []\n-        self._non_form_errors = self.error_class()\n+        self._non_form_errors = self.error_class(error_class='nonform')\n         empty_forms_count = 0\n \n         if not self.is_bound:  # Stop further processing.\n@@ -380,7 +380,7 @@ class BaseFormSet:\n             # Give self.clean() a chance to do cross-form validation.\n             self.clean()\n         except ValidationError as e:\n-            self._non_form_errors = self.error_class(e.error_list)\n+            self._non_form_errors = self.error_class(e.error_list, error_class='nonform')\n \n     def clean(self):\n         \"\"\"\ndiff --git a/docs/topics/forms/index.txt b/docs/topics/forms/index.txt\nindex e55b6d7bf2..869361c18d 100755\n--- a/docs/topics/forms/index.txt\n+++ b/docs/topics/forms/index.txt\n@@ -616,6 +616,17 @@ errors. For example, ``{{ form.non_field_errors }}`` would look like:\n         <li>Generic validation error</li>\n     </ul>\n \n+Non-form errors (errors raised by a formset's ``clean()``) will be rendered\n+with an additional class of ``nonform`` to help distinguish them from\n+field-specific and non-field errors. For example,\n+``{{ formset.non_form_errors }}`` would look like:\n+\n+.. code-block:: html+django\n+\n+    <ul class=\"errorlist nonform\">\n+        <li>Generic validation error</li>\n+    </ul>\n+\n See :doc:`/ref/forms/api` for more on errors, styling, and working with form\n attributes in templates.\n \n",
+        "returncode": 0,
+        "timestamp": 1792014162.568889,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01HL2F9hdypxwrxjYaBhDENW",
+      "role": "tool"
+    },
+    {
+      "content": "<predicted_output_tokens>60</predicted_output_tokens>\n\nThe patch contains only the intended changes, so I'm submitting it.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01FSa64cWt2gurjvz5j6y5gn",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt",
+            "tool_call_id": "toolu_01FSa64cWt2gurjvz5j6y5gn"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-a0a79bfe-517d-4002-8c75-7f5443a42f55",
+          "created": 1792014164,
+          "model": "claude-sonnet-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>60</predicted_output_tokens>\n\nThe patch contains only the intended changes, so I'm submitting it.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01FSa64cWt2gurjvz5j6y5gn",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 140,
+            "prompt_tokens": 6665,
+            "total_tokens": 6805,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 140
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 988,
+              "cached_tokens": 5640,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 988,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 988,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 988,
+            "cache_read_input_tokens": 5640,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.004508000000000001,
+        "timestamp": 1792014164.5715356
+      }
+    },
+    {
+      "role": "exit",
+      "content": "diff --git a/django/forms/formsets.py b/django/forms/formsets.py\nindex a89c35599f..1b0d4554e0 100755\n--- a/django/forms/formsets.py\n+++ b/django/forms/formsets.py\n@@ -333,7 +333,7 @@ class BaseFormSet:\n         self._non_form_errors.\n         \"\"\"\n         self._errors = []\n-        self._non_form_errors = self.error_class()\n+        self._non_form_errors = self.error_class(error_class='nonform')\n         empty_forms_count = 0\n \n         if not self.is_bound:  # Stop further processing.\n@@ -380,7 +380,7 @@ class BaseFormSet:\n             # Give self.clean() a chance to do cross-form validation.\n             self.clean()\n         except ValidationError as e:\n-            self._non_form_errors = self.error_class(e.error_list)\n+            self._non_form_errors = self.error_class(e.error_list, error_class='nonform')\n \n     def clean(self):\n         \"\"\"\ndiff --git a/docs/topics/forms/index.txt b/docs/topics/forms/index.txt\nindex e55b6d7bf2..869361c18d 100755\n--- a/docs/topics/forms/index.txt\n+++ b/docs/topics/forms/index.txt\n@@ -616,6 +616,17 @@ errors. For example, ``{{ form.non_field_errors }}`` would look like:\n         <li>Generic validation error</li>\n     </ul>\n \n+Non-form errors (errors raised by a formset's ``clean()``) will be rendered\n+with an additional class of ``nonform`` to help distinguish them from\n+field-specific and non-field errors. For example,\n+``{{ formset.non_form_errors }}`` would look like:\n+\n+.. code-block:: html+django\n+\n+    <ul class=\"errorlist nonform\">\n+        <li>Generic validation error</li>\n+    </ul>\n+\n See :doc:`/ref/forms/api` for more on errors, styling, and working with form\n attributes in templates.\n \n",
+      "extra": {
+        "exit_status": "Submitted",
+        "submission": "diff --git a/django/forms/formsets.py b/django/forms/formsets.py\nindex a89c35599f..1b0d4554e0 100755\n--- a/django/forms/formsets.py\n+++ b/django/forms/formsets.py\n@@ -333,7 +333,7 @@ class BaseFormSet:\n         self._non_form_errors.\n         \"\"\"\n         self._errors = []\n-        self._non_form_errors = self.error_class()\n+        self._non_form_errors = self.error_class(error_class='nonform')\n         empty_forms_count = 0\n \n         if not self.is_bound:  # Stop further processing.\n@@ -380,7 +380,7 @@ class BaseFormSet:\n             # Give self.clean() a chance to do cross-form validation.\n             self.clean()\n         except ValidationError as e:\n-            self._non_form_errors = self.error_class(e.error_list)\n+            self._non_form_errors = self.error_class(e.error_list, error_class='nonform')\n \n     def clean(self):\n         \"\"\"\ndiff --git a/docs/topics/forms/index.txt b/docs/topics/forms/index.txt\nindex e55b6d7bf2..869361c18d 100755\n--- a/docs/topics/forms/index.txt\n+++ b/docs/topics/forms/index.txt\n@@ -616,6 +616,17 @@ errors. For example, ``{{ form.non_field_errors }}`` would look like:\n         <li>Generic validation error</li>\n     </ul>\n \n+Non-form errors (errors raised by a formset's ``clean()``) will be rendered\n+with an additional class of ``nonform`` to help distinguish them from\n+field-specific and non-field errors. For example,\n+``{{ formset.non_form_errors }}`` would look like:\n+\n+.. code-block:: html+django\n+\n+    <ul class=\"errorlist nonform\">\n+        <li>Generic validation error</li>\n+    </ul>\n+\n See :doc:`/ref/forms/api` for more on errors, styling, and working with form\n attributes in templates.\n \n"
+      }
+    }
+  ],
+  "trajectory_format": "mini-swe-agent-1.1",
+  "instance_id": "django__django-14608"
+}

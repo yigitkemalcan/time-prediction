@@ -1,0 +1,612 @@
+{
+  "step_timings": [
+    {
+      "step": 1,
+      "inference": {
+        "start_mono_ns": 325512196791721,
+        "end_mono_ns": 325514725145129,
+        "elapsed_s": 2.528353408,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 325514725151992,
+          "end_mono_ns": 325514799491248,
+          "elapsed_s": 0.074339256,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "inference": {
+        "start_mono_ns": 325514801117496,
+        "end_mono_ns": 325520774106788,
+        "elapsed_s": 5.972989292,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 325520774116476,
+          "end_mono_ns": 325521662794062,
+          "elapsed_s": 0.888677586,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "inference": {
+        "start_mono_ns": 325521664360937,
+        "end_mono_ns": 325523634478012,
+        "elapsed_s": 1.970117075,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 325523634486789,
+          "end_mono_ns": 325523696434975,
+          "elapsed_s": 0.061948186,
+          "outcome": "returned"
+        }
+      ]
+    },
+    {
+      "step": 4,
+      "inference": {
+        "start_mono_ns": 325523698105185,
+        "end_mono_ns": 325527091388099,
+        "elapsed_s": 3.393282914,
+        "outcome": "returned"
+      },
+      "tools": [
+        {
+          "action": 1,
+          "start_mono_ns": 325527091397617,
+          "end_mono_ns": 325527153986341,
+          "elapsed_s": 0.062588724,
+          "outcome": "Submitted"
+        }
+      ]
+    }
+  ],
+  "info": {
+    "model_stats": {
+      "instance_cost": 0.04350640000000001,
+      "api_calls": 4
+    },
+    "config": {
+      "agent": {
+        "system_template": "You are a helpful assistant that can interact with a computer shell to solve programming tasks.\n\nBefore writing anything else in each response, estimate how many tokens your complete response will contain (your reasoning text plus all tool calls). Begin the response with this estimate, written exactly as <predicted_output_tokens>N</predicted_output_tokens>, where N is a single integer. Then write the rest of your response as you normally would.\n",
+        "instance_template": "<pr_description>\nConsider the following PR description:\n{{task}}\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\n\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n<IMPORTANT>This is an interactive process where you will think and issue AT LEAST ONE command, see the result, then think and issue your next command(s).</important>\n\nFor each response:\n\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide one or more bash tool calls to execute\n\n## Important Boundaries\n\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\n\nYou are operating in an environment where\n\n1. You issue at least one command\n2. The system executes the command(s) in a subshell\n3. You see the result(s)\n4. You write your next command(s)\n\nEach response should include:\n\n1. **Reasoning text** where you explain your analysis and plan\n2. At least one tool call with your command\n\n**CRITICAL REQUIREMENTS:**\n\n- Your response SHOULD include reasoning text explaining what you're doing\n- Your response MUST include AT LEAST ONE bash tool call. You can make MULTIPLE tool calls in a single response when the commands are independent (e.g., searching multiple files, reading different parts of the codebase).\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nI need to understand the Builder-related code. Let me find relevant files and check the project structure.\n\n[Makes multiple bash tool calls: {\"command\": \"ls -la\"}, {\"command\": \"find src -name '*.java' | grep -i builder\"}, {\"command\": \"cat README.md | head -50\"}]\n</example_response>\n\n## Environment Details\n\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- You can use bash commands or invoke any tool that is available in the environment\n- You can also create new tools or scripts to help you with the task\n- If a tool isn't available, you can also install it\n\n## Submission\n\nWhen you've completed your work, you MUST submit your changes as a git patch.\nFollow these steps IN ORDER, with SEPARATE commands:\n\nStep 1: Create the patch file\nRun `git diff -- path/to/file1 path/to/file2 > patch.txt` listing only the source files you modified.\nDo NOT commit your changes.\n\n<IMPORTANT>\nThe patch must only contain changes to the specific source files you modified to fix the issue.\nDo not submit file creations or changes to any of the following files:\n\n- test and reproduction files\n- helper scripts, tests, or tools that you created\n- installation, build, packaging, configuration, or setup scripts unless they are directly part of the issue you were fixing (you can assume that the environment is already set up for your client)\n- binary or compiled files\n</IMPORTANT>\n\nStep 2: Verify your patch\nInspect patch.txt to confirm it only contains your intended changes and headers show `--- a/` and `+++ b/` paths.\n\nStep 3: Submit (EXACT command required)\nYou MUST use this EXACT command to submit:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\n```\n\nIf the command fails (nonzero exit status), it will not submit.\n\n<CRITICAL>\n- Creating/viewing the patch and submitting it MUST be separate commands (not combined with &&).\n- If you modify patch.txt after verifying, you SHOULD verify again before submitting.\n- You CANNOT continue working (reading, editing, testing) in any way on this task after submitting.\n</CRITICAL>\n</instructions>\n",
+        "step_limit": 250,
+        "cost_limit": 3.0,
+        "wall_time_limit_seconds": 0,
+        "max_consecutive_format_errors": 3,
+        "output_path": null
+      },
+      "agent_type": "minisweagent.run.benchmarks.utils.common.ProgressTrackingAgent",
+      "model": {
+        "model_name": "anthropic/claude-opus-5-5",
+        "model_kwargs": {
+          "drop_params": true,
+          "parallel_tool_calls": true,
+          "api_base": "http://127.0.0.1:8200",
+          "api_key": "via-local-relay",
+          "num_retries": 3,
+          "timeout": 1200
+        },
+        "litellm_model_registry": null,
+        "set_cache_control": "default_end",
+        "cost_tracking": "ignore_errors",
+        "format_error_template": "{% if finish_reason is defined and (finish_reason == \"length\" or (finish_reason == \"tool_calls\" and not has_tool_calls)) -%}\nYour previous response reached the output token limit (finish_reason={{ finish_reason }}) before you produced a tool call, so it was cut off. Respond more concisely and finish with exactly one bash tool call. If you need to think more, do so briefly.\n{%- else -%}\nTool call error:\n\n<error>\n{{error}}\n</error>\n\nHere is general guidance on how to submit correct toolcalls:\n\nEvery response needs to use the 'bash' tool at least once to execute commands.\n\nCall the bash tool with your command as the argument:\n- Tool: bash\n- Arguments: {\"command\": \"your_command_here\"}\n\nIf you have completed your assignment, please consult the first message about how to\nsubmit your solution (you will not be able to continue working on this task after that).\n{%- endif %}\n",
+        "observation_template": "{% if output.exception_info -%}\n<exception>{{output.exception_info}}</exception>\n{% endif -%}\n<returncode>{{output.returncode}}</returncode>\n{% if output.output | length < 10000 -%}\n<output>\n{{ output.output -}}\n</output>\n{%- else -%}\n<warning>\nThe output of your last command was too long.\nPlease try a different command that produces less output.\nIf you're looking at a file you can try use head, tail or sed to view a smaller number of lines selectively.\nIf you're using grep or find and it produced too much output, you can use a more selective search pattern.\nIf you really need to see something from the full command's output, you can redirect output to a file and then search in that file.\n</warning>\n{%- set elided_chars = output.output | length - 10000 -%}\n<output_head>\n{{ output.output[:5000] }}\n</output_head>\n<elided_chars>\n{{ elided_chars }} characters elided\n</elided_chars>\n<output_tail>\n{{ output.output[-5000:] }}\n</output_tail>\n{%- endif -%}\n",
+        "multimodal_regex": ""
+      },
+      "model_type": "minisweagent.models.litellm_model.LitellmModel",
+      "environment": {
+        "image": "docker.io/swebench/sweb.eval.x86_64.sphinx-doc_1776_sphinx-9281:latest",
+        "cwd": "/testbed",
+        "env": {
+          "PAGER": "cat",
+          "MANPAGER": "cat",
+          "LESS": "-R",
+          "PIP_PROGRESS_BAR": "off",
+          "TQDM_DISABLE": "1",
+          "BASH_ENV": "/root/.bashrc"
+        },
+        "forward_env": [],
+        "timeout": 60,
+        "interpreter": [
+          "bash",
+          "-c"
+        ],
+        "vcpus": 4,
+        "mem_mb": 8192,
+        "upper_gb": 16,
+        "work_dir": "/tmp/cl-vms"
+      },
+      "environment_type": "minisweagent.environments.extra.microvm.MicroVMEnvironment"
+    },
+    "mini_version": "2.4.6",
+    "exit_status": "Submitted",
+    "submission": "diff --git a/sphinx/util/inspect.py b/sphinx/util/inspect.py\nindex a415a7074..9616784cf 100644\n--- a/sphinx/util/inspect.py\n+++ b/sphinx/util/inspect.py\n@@ -457,6 +457,9 @@ def object_description(object: Any) -> str:\n         else:\n             return \"frozenset({%s})\" % \", \".join(object_description(x)\n                                                  for x in sorted_values)\n+    if isinstance(object, enum.Enum):\n+        return \"%s.%s\" % (object.__class__.__name__, object.name)\n+\n     try:\n         s = repr(object)\n     except Exception as exc:\n",
+    "task_timing": {
+      "start_mono_ns": 325511689963687,
+      "environment_ready_mono_ns": 325512195952739,
+      "end_mono_ns": 325527154091079
+    }
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant that can interact with a computer shell to solve programming tasks.\n\nBefore writing anything else in each response, estimate how many tokens your complete response will contain (your reasoning text plus all tool calls). Begin the response with this estimate, written exactly as <predicted_output_tokens>N</predicted_output_tokens>, where N is a single integer. Then write the rest of your response as you normally would."
+    },
+    {
+      "role": "user",
+      "content": "<pr_description>\nConsider the following PR description:\nPython Enum values (used to show default values in function signatures) are rendered ugly.\nPython Enum values (used to show default values in function signatures) are rendered ugly.\r\n\r\n**To Reproduce**\r\n\r\nI made a minimal example to show the issue:\r\n\r\nhttps://github.com/sidneycadot/sphinx_issue_ugly_enum\r\n\r\n```\r\n$ git clone git@github.com:sidneycadot/sphinx_issue_ugly_enum.git\r\n$ cd sphinx_issue_ugly_enum/\r\n$ make html\r\n$ firefox build/html/index.html \r\n```\r\n\r\n**Expected behavior**\r\n\r\nI would hope the signature rendered as:\r\n\r\n    ugly_enum_func(e: ugly_enum.MyEnum = MyEnum.ValueA) \u2192 None\r\n\r\nUnfortunately, it renders as:\r\n\r\n    ugly_enum_func(e: ugly_enum.MyEnum = <MyEnum.ValueA: 10>) \u2192 None\r\n\r\n**Environment info**\r\n\r\n- Python version: 3.9.5\r\n- Sphinx version: 4.0.2\r\n- Sphinx extensions: autodoc\r\n\n\n</pr_description>\n\n<instructions>\n# Task Instructions\n\n## Overview\n\nYou're a software engineer interacting continuously with a computer by submitting commands.\nYou'll be helping implement necessary changes to meet requirements in the PR description.\nYour task is specifically to make changes to non-test files in the current directory in order to fix the issue described in the PR description in a way that is general and consistent with the codebase.\n<IMPORTANT>This is an interactive process where you will think and issue AT LEAST ONE command, see the result, then think and issue your next command(s).</important>\n\nFor each response:\n\n1. Include a THOUGHT section explaining your reasoning and what you're trying to accomplish\n2. Provide one or more bash tool calls to execute\n\n## Important Boundaries\n\n- MODIFY: Regular source code files in /testbed (this is the working directory for all your subsequent commands)\n- DO NOT MODIFY: Tests, configuration files (pyproject.toml, setup.cfg, etc.)\n\n## Recommended Workflow\n\n1. Analyze the codebase by finding and reading relevant files\n2. Create a script to reproduce the issue\n3. Edit the source code to resolve the issue\n4. Verify your fix works by running your script again\n5. Test edge cases to ensure your fix is robust\n\n## Command Execution Rules\n\nYou are operating in an environment where\n\n1. You issue at least one command\n2. The system executes the command(s) in a subshell\n3. You see the result(s)\n4. You write your next command(s)\n\nEach response should include:\n\n1. **Reasoning text** where you explain your analysis and plan\n2. At least one tool call with your command\n\n**CRITICAL REQUIREMENTS:**\n\n- Your response SHOULD include reasoning text explaining what you're doing\n- Your response MUST include AT LEAST ONE bash tool call. You can make MULTIPLE tool calls in a single response when the commands are independent (e.g., searching multiple files, reading different parts of the codebase).\n- Directory or environment variable changes are not persistent. Every action is executed in a new subshell.\n- However, you can prefix any action with `MY_ENV_VAR=MY_VALUE cd /path/to/working/dir && ...` or write/load environment variables from files\n\nExample of a CORRECT response:\n<example_response>\nI need to understand the Builder-related code. Let me find relevant files and check the project structure.\n\n[Makes multiple bash tool calls: {\"command\": \"ls -la\"}, {\"command\": \"find src -name '*.java' | grep -i builder\"}, {\"command\": \"cat README.md | head -50\"}]\n</example_response>\n\n## Environment Details\n\n- You have a full Linux shell environment\n- Always use non-interactive flags (-y, -f) for commands\n- Avoid interactive tools like vi, nano, or any that require user input\n- You can use bash commands or invoke any tool that is available in the environment\n- You can also create new tools or scripts to help you with the task\n- If a tool isn't available, you can also install it\n\n## Submission\n\nWhen you've completed your work, you MUST submit your changes as a git patch.\nFollow these steps IN ORDER, with SEPARATE commands:\n\nStep 1: Create the patch file\nRun `git diff -- path/to/file1 path/to/file2 > patch.txt` listing only the source files you modified.\nDo NOT commit your changes.\n\n<IMPORTANT>\nThe patch must only contain changes to the specific source files you modified to fix the issue.\nDo not submit file creations or changes to any of the following files:\n\n- test and reproduction files\n- helper scripts, tests, or tools that you created\n- installation, build, packaging, configuration, or setup scripts unless they are directly part of the issue you were fixing (you can assume that the environment is already set up for your client)\n- binary or compiled files\n</IMPORTANT>\n\nStep 2: Verify your patch\nInspect patch.txt to confirm it only contains your intended changes and headers show `--- a/` and `+++ b/` paths.\n\nStep 3: Submit (EXACT command required)\nYou MUST use this EXACT command to submit:\n\n```bash\necho COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\n```\n\nIf the command fails (nonzero exit status), it will not submit.\n\n<CRITICAL>\n- Creating/viewing the patch and submitting it MUST be separate commands (not combined with &&).\n- If you modify patch.txt after verifying, you SHOULD verify again before submitting.\n- You CANNOT continue working (reading, editing, testing) in any way on this task after submitting.\n</CRITICAL>\n</instructions>"
+    },
+    {
+      "content": "<predicted_output_tokens>2500</predicted_output_tokens>\n\nTHOUGHT: I'm going to start by reading `object_description` in sphinx/util/inspect.py.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && grep -n \\\"def object_description\\\" -A 40 sphinx/util/inspect.py; grep -n \\\"^import\\\\|^from\\\" sphinx/util/inspect.py\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01HBYbjmbUdwte8GRp5j6yu2",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && grep -n \"def object_description\" -A 40 sphinx/util/inspect.py; grep -n \"^import\\|^from\" sphinx/util/inspect.py",
+            "tool_call_id": "toolu_01HBYbjmbUdwte8GRp5j6yu2"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-267c1e76-7fe3-4274-bde6-c3912b9d880b",
+          "created": 1792025275,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>2500</predicted_output_tokens>\n\nTHOUGHT: I'm going to start by reading `object_description` in sphinx/util/inspect.py.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && grep -n \\\"def object_description\\\" -A 40 sphinx/util/inspect.py; grep -n \\\"^import\\\\|^from\\\" sphinx/util/inspect.py\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01HBYbjmbUdwte8GRp5j6yu2",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 165,
+            "prompt_tokens": 2397,
+            "total_tokens": 2562,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 165
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 2393,
+              "cached_tokens": 0,
+              "text_tokens": 4,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 2393,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 2393,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 2393,
+            "cache_read_input_tokens": 0,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.015281000000000003,
+        "timestamp": 1792025275.789
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\n433:def object_description(object: Any) -> str:\n434-    \"\"\"A repr() implementation that returns text safe to use in reST context.\"\"\"\n435-    if isinstance(object, dict):\n436-        try:\n437-            sorted_keys = sorted(object)\n438-        except Exception:\n439-            pass  # Cannot sort dict keys, fall back to generic repr\n440-        else:\n441-            items = (\"%s: %s\" %\n442-                     (object_description(key), object_description(object[key]))\n443-                     for key in sorted_keys)\n444-            return \"{%s}\" % \", \".join(items)\n445-    if isinstance(object, set):\n446-        try:\n447-            sorted_values = sorted(object)\n448-        except TypeError:\n449-            pass  # Cannot sort set values, fall back to generic repr\n450-        else:\n451-            return \"{%s}\" % \", \".join(object_description(x) for x in sorted_values)\n452-    if isinstance(object, frozenset):\n453-        try:\n454-            sorted_values = sorted(object)\n455-        except TypeError:\n456-            pass  # Cannot sort frozenset values, fall back to generic repr\n457-        else:\n458-            return \"frozenset({%s})\" % \", \".join(object_description(x)\n459-                                                 for x in sorted_values)\n460-    try:\n461-        s = repr(object)\n462-    except Exception as exc:\n463-        raise ValueError from exc\n464-    # Strip non-deterministic memory addresses such as\n465-    # ``<__main__.A at 0x7f68cb685710>``\n466-    s = memory_address_re.sub('', s)\n467-    return s.replace('\\n', ' ')\n468-\n469-\n470-def is_builtin_class_method(obj: Any, attr_name: str) -> bool:\n471-    \"\"\"If attr_name is implemented at builtin class, return True.\n472-\n473-        >>> is_builtin_class_method(int, '__init__')\n11:import builtins\n12:import contextlib\n13:import enum\n14:import inspect\n15:import re\n16:import sys\n17:import types\n18:import typing\n19:import warnings\n20:from functools import partial, partialmethod\n21:from importlib import import_module\n22:from inspect import Parameter, isclass, ismethod, ismethoddescriptor, ismodule  # NOQA\n23:from io import StringIO\n24:from types import ModuleType\n25:from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple, Type, cast\n27:from sphinx.deprecation import RemovedInSphinx50Warning\n28:from sphinx.pycode.ast import ast  # for py36-37\n29:from sphinx.pycode.ast import unparse as ast_unparse\n30:from sphinx.util import logging\n31:from sphinx.util.typing import ForwardRef\n32:from sphinx.util.typing import stringify as stringify_annotation\n</output>",
+      "extra": {
+        "raw_output": "433:def object_description(object: Any) -> str:\n434-    \"\"\"A repr() implementation that returns text safe to use in reST context.\"\"\"\n435-    if isinstance(object, dict):\n436-        try:\n437-            sorted_keys = sorted(object)\n438-        except Exception:\n439-            pass  # Cannot sort dict keys, fall back to generic repr\n440-        else:\n441-            items = (\"%s: %s\" %\n442-                     (object_description(key), object_description(object[key]))\n443-                     for key in sorted_keys)\n444-            return \"{%s}\" % \", \".join(items)\n445-    if isinstance(object, set):\n446-        try:\n447-            sorted_values = sorted(object)\n448-        except TypeError:\n449-            pass  # Cannot sort set values, fall back to generic repr\n450-        else:\n451-            return \"{%s}\" % \", \".join(object_description(x) for x in sorted_values)\n452-    if isinstance(object, frozenset):\n453-        try:\n454-            sorted_values = sorted(object)\n455-        except TypeError:\n456-            pass  # Cannot sort frozenset values, fall back to generic repr\n457-        else:\n458-            return \"frozenset({%s})\" % \", \".join(object_description(x)\n459-                                                 for x in sorted_values)\n460-    try:\n461-        s = repr(object)\n462-    except Exception as exc:\n463-        raise ValueError from exc\n464-    # Strip non-deterministic memory addresses such as\n465-    # ``<__main__.A at 0x7f68cb685710>``\n466-    s = memory_address_re.sub('', s)\n467-    return s.replace('\\n', ' ')\n468-\n469-\n470-def is_builtin_class_method(obj: Any, attr_name: str) -> bool:\n471-    \"\"\"If attr_name is implemented at builtin class, return True.\n472-\n473-        >>> is_builtin_class_method(int, '__init__')\n11:import builtins\n12:import contextlib\n13:import enum\n14:import inspect\n15:import re\n16:import sys\n17:import types\n18:import typing\n19:import warnings\n20:from functools import partial, partialmethod\n21:from importlib import import_module\n22:from inspect import Parameter, isclass, ismethod, ismethoddescriptor, ismodule  # NOQA\n23:from io import StringIO\n24:from types import ModuleType\n25:from typing import Any, Callable, Dict, Mapping, Optional, Sequence, Tuple, Type, cast\n27:from sphinx.deprecation import RemovedInSphinx50Warning\n28:from sphinx.pycode.ast import ast  # for py36-37\n29:from sphinx.pycode.ast import unparse as ast_unparse\n30:from sphinx.util import logging\n31:from sphinx.util.typing import ForwardRef\n32:from sphinx.util.typing import stringify as stringify_annotation\n",
+        "returncode": 0,
+        "timestamp": 1792025275.8648953,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01HBYbjmbUdwte8GRp5j6yu2",
+      "role": "tool"
+    },
+    {
+      "content": "<predicted_output_tokens>1200</predicted_output_tokens>\n\nTHOUGHT: I'll add a special case for Enum members, which renders them as `ClassName.member`. This matches the upstream Sphinx fix.",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 2,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && python - <<'EOF'\\np='sphinx/util/inspect.py'\\ns=open(p).read()\\nold=\\\"\\\"\\\"                                                 for x in sorted_values)\\n    try:\\n        s = repr(object)\\\"\\\"\\\"\\nnew=\\\"\\\"\\\"                                                 for x in sorted_values)\\n    if isinstance(object, enum.Enum):\\n        return \\\"%s.%s\\\" % (object.__class__.__name__, object.name)\\n\\n    try:\\n        s = repr(object)\\\"\\\"\\\"\\nassert old in s\\nopen(p,'w').write(s.replace(old,new))\\nEOF\\npython -c \\\"\\nimport enum\\nfrom sphinx.util.inspect import object_description, stringify_signature, signature\\nclass MyEnum(enum.Enum):\\n    ValueA=10\\ndef f(e: MyEnum = MyEnum.ValueA) -> None: pass\\nprint(object_description(MyEnum.ValueA)); print(stringify_signature(signature(f)))\\n\\\"\\npython -m pytest tests/test_util_inspect.py -q 2>&1 | tail -3\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01MFBjzjUdbV8YG2SUG3Jnnk",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "reasoning_content": "",
+      "thinking_blocks": [
+        {
+          "type": "thinking",
+          "thinking": "",
+          "signature": "CAQSzQUKEAgSGAI4AUIIdGhpbmtpbmcSDPvQigo8robGoHyeOBoMKNh+B9XfnTn/98IXIjAbThGavleX/Zv7Gfqc2I1Ul/2yaZFl5AuM18re2zeko19wOrtIttjcbzniRUzMebwq6gR/rI/3gyd7BJUZUD5iOedEBi91TuZtcCde9Epv/baVabo9U+IbUf5Q4y/eogwtnAPdFpofGw8sC9oWkx7XIjtc5I08gL5CziMuFz3h335MKk6StQ0XlDD21d5yztQ4iR4qiyxxu5mdWKESLapi8LuluPOYil0iqNtbLP8uoRgdx6wG+pQEj7rD0FQe5KmjA32vTMhfgrQ3uYWdeHxJdIBcrS57XvDeFeA3ve5hPgQ4J4jZRcCLpkfdrFBsY+sVJfQZW1zToHzR1LeUXZjWmeqUnt/ybUL55USBO5xXDugU0nHEwWeUJu3kkCtvDs6P7E3g7WkQ1oVJroenqG7fM9H1p+MzpWL6wL0JbpRWHo8WxcueOCPVq9P+h1MNtVNlABBym2wCJCqFT/5UAqULsPO4/LiKzbBBJFCQabnNvaPXW4zU9n7akARmbHvpSinzIi6QN6b6X3jc7Q+huOBYojRrK27m3TqTfckkrkvVHkyDVVTvh6W9b613ojUNKrAv7RDdvilf91M+aPDvHcYv8KnxmNS3ElTeZVB5Wn/lnFTCKX63UMAzzczRPZ80ym1JSpl6ihe5wZqDpiqQS7Dw1phBm0QuDTAdUgDS5eRRhWjurXV6LWN+VDYCTF2hWYpbVfu2gsca+y0NTMo5om4J3kEQuyx3QywlmPXwzWomNkjavf4ta9O/wp3nfh/LM7raGSTT6IY3hJ86T3OMfQteb209qtU1Zp2RwvNIMwux8+Lp4Fo3xJdK+I9TYHL1fDKUGCTFnSeHDBecHvxfq3H0sjLRc8+hylwF/K36AyLnOJusIke5ZjObs7AD3zAYAQ=="
+        }
+      ],
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": [
+          {
+            "signature": "CAQSzQUKEAgSGAI4AUIIdGhpbmtpbmcSDPvQigo8robGoHyeOBoMKNh+B9XfnTn/98IXIjAbThGavleX/Zv7Gfqc2I1Ul/2yaZFl5AuM18re2zeko19wOrtIttjcbzniRUzMebwq6gR/rI/3gyd7BJUZUD5iOedEBi91TuZtcCde9Epv/baVabo9U+IbUf5Q4y/eogwtnAPdFpofGw8sC9oWkx7XIjtc5I08gL5CziMuFz3h335MKk6StQ0XlDD21d5yztQ4iR4qiyxxu5mdWKESLapi8LuluPOYil0iqNtbLP8uoRgdx6wG+pQEj7rD0FQe5KmjA32vTMhfgrQ3uYWdeHxJdIBcrS57XvDeFeA3ve5hPgQ4J4jZRcCLpkfdrFBsY+sVJfQZW1zToHzR1LeUXZjWmeqUnt/ybUL55USBO5xXDugU0nHEwWeUJu3kkCtvDs6P7E3g7WkQ1oVJroenqG7fM9H1p+MzpWL6wL0JbpRWHo8WxcueOCPVq9P+h1MNtVNlABBym2wCJCqFT/5UAqULsPO4/LiKzbBBJFCQabnNvaPXW4zU9n7akARmbHvpSinzIi6QN6b6X3jc7Q+huOBYojRrK27m3TqTfckkrkvVHkyDVVTvh6W9b613ojUNKrAv7RDdvilf91M+aPDvHcYv8KnxmNS3ElTeZVB5Wn/lnFTCKX63UMAzzczRPZ80ym1JSpl6ihe5wZqDpiqQS7Dw1phBm0QuDTAdUgDS5eRRhWjurXV6LWN+VDYCTF2hWYpbVfu2gsca+y0NTMo5om4J3kEQuyx3QywlmPXwzWomNkjavf4ta9O/wp3nfh/LM7raGSTT6IY3hJ86T3OMfQteb209qtU1Zp2RwvNIMwux8+Lp4Fo3xJdK+I9TYHL1fDKUGCTFnSeHDBecHvxfq3H0sjLRc8+hylwF/K36AyLnOJusIke5ZjObs7AD3zAYAQ==",
+            "thinking": "",
+            "type": "thinking"
+          }
+        ]
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && python - <<'EOF'\np='sphinx/util/inspect.py'\ns=open(p).read()\nold=\"\"\"                                                 for x in sorted_values)\n    try:\n        s = repr(object)\"\"\"\nnew=\"\"\"                                                 for x in sorted_values)\n    if isinstance(object, enum.Enum):\n        return \"%s.%s\" % (object.__class__.__name__, object.name)\n\n    try:\n        s = repr(object)\"\"\"\nassert old in s\nopen(p,'w').write(s.replace(old,new))\nEOF\npython -c \"\nimport enum\nfrom sphinx.util.inspect import object_description, stringify_signature, signature\nclass MyEnum(enum.Enum):\n    ValueA=10\ndef f(e: MyEnum = MyEnum.ValueA) -> None: pass\nprint(object_description(MyEnum.ValueA)); print(stringify_signature(signature(f)))\n\"\npython -m pytest tests/test_util_inspect.py -q 2>&1 | tail -3",
+            "tool_call_id": "toolu_01MFBjzjUdbV8YG2SUG3Jnnk"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-a7870f02-82e3-4845-889f-86c26681d2cb",
+          "created": 1792025281,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>1200</predicted_output_tokens>\n\nTHOUGHT: I'll add a special case for Enum members, which renders them as `ClassName.member`. This matches the upstream Sphinx fix.",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 2,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && python - <<'EOF'\\np='sphinx/util/inspect.py'\\ns=open(p).read()\\nold=\\\"\\\"\\\"                                                 for x in sorted_values)\\n    try:\\n        s = repr(object)\\\"\\\"\\\"\\nnew=\\\"\\\"\\\"                                                 for x in sorted_values)\\n    if isinstance(object, enum.Enum):\\n        return \\\"%s.%s\\\" % (object.__class__.__name__, object.name)\\n\\n    try:\\n        s = repr(object)\\\"\\\"\\\"\\nassert old in s\\nopen(p,'w').write(s.replace(old,new))\\nEOF\\npython -c \\\"\\nimport enum\\nfrom sphinx.util.inspect import object_description, stringify_signature, signature\\nclass MyEnum(enum.Enum):\\n    ValueA=10\\ndef f(e: MyEnum = MyEnum.ValueA) -> None: pass\\nprint(object_description(MyEnum.ValueA)); print(stringify_signature(signature(f)))\\n\\\"\\npython -m pytest tests/test_util_inspect.py -q 2>&1 | tail -3\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01MFBjzjUdbV8YG2SUG3Jnnk",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "reasoning_content": "",
+                "thinking_blocks": [
+                  {
+                    "type": "thinking",
+                    "thinking": "",
+                    "signature": "CAQSzQUKEAgSGAI4AUIIdGhpbmtpbmcSDPvQigo8robGoHyeOBoMKNh+B9XfnTn/98IXIjAbThGavleX/Zv7Gfqc2I1Ul/2yaZFl5AuM18re2zeko19wOrtIttjcbzniRUzMebwq6gR/rI/3gyd7BJUZUD5iOedEBi91TuZtcCde9Epv/baVabo9U+IbUf5Q4y/eogwtnAPdFpofGw8sC9oWkx7XIjtc5I08gL5CziMuFz3h335MKk6StQ0XlDD21d5yztQ4iR4qiyxxu5mdWKESLapi8LuluPOYil0iqNtbLP8uoRgdx6wG+pQEj7rD0FQe5KmjA32vTMhfgrQ3uYWdeHxJdIBcrS57XvDeFeA3ve5hPgQ4J4jZRcCLpkfdrFBsY+sVJfQZW1zToHzR1LeUXZjWmeqUnt/ybUL55USBO5xXDugU0nHEwWeUJu3kkCtvDs6P7E3g7WkQ1oVJroenqG7fM9H1p+MzpWL6wL0JbpRWHo8WxcueOCPVq9P+h1MNtVNlABBym2wCJCqFT/5UAqULsPO4/LiKzbBBJFCQabnNvaPXW4zU9n7akARmbHvpSinzIi6QN6b6X3jc7Q+huOBYojRrK27m3TqTfckkrkvVHkyDVVTvh6W9b613ojUNKrAv7RDdvilf91M+aPDvHcYv8KnxmNS3ElTeZVB5Wn/lnFTCKX63UMAzzczRPZ80ym1JSpl6ihe5wZqDpiqQS7Dw1phBm0QuDTAdUgDS5eRRhWjurXV6LWN+VDYCTF2hWYpbVfu2gsca+y0NTMo5om4J3kEQuyx3QywlmPXwzWomNkjavf4ta9O/wp3nfh/LM7raGSTT6IY3hJ86T3OMfQteb209qtU1Zp2RwvNIMwux8+Lp4Fo3xJdK+I9TYHL1fDKUGCTFnSeHDBecHvxfq3H0sjLRc8+hylwF/K36AyLnOJusIke5ZjObs7AD3zAYAQ=="
+                  }
+                ],
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": [
+                    {
+                      "signature": "CAQSzQUKEAgSGAI4AUIIdGhpbmtpbmcSDPvQigo8robGoHyeOBoMKNh+B9XfnTn/98IXIjAbThGavleX/Zv7Gfqc2I1Ul/2yaZFl5AuM18re2zeko19wOrtIttjcbzniRUzMebwq6gR/rI/3gyd7BJUZUD5iOedEBi91TuZtcCde9Epv/baVabo9U+IbUf5Q4y/eogwtnAPdFpofGw8sC9oWkx7XIjtc5I08gL5CziMuFz3h335MKk6StQ0XlDD21d5yztQ4iR4qiyxxu5mdWKESLapi8LuluPOYil0iqNtbLP8uoRgdx6wG+pQEj7rD0FQe5KmjA32vTMhfgrQ3uYWdeHxJdIBcrS57XvDeFeA3ve5hPgQ4J4jZRcCLpkfdrFBsY+sVJfQZW1zToHzR1LeUXZjWmeqUnt/ybUL55USBO5xXDugU0nHEwWeUJu3kkCtvDs6P7E3g7WkQ1oVJroenqG7fM9H1p+MzpWL6wL0JbpRWHo8WxcueOCPVq9P+h1MNtVNlABBym2wCJCqFT/5UAqULsPO4/LiKzbBBJFCQabnNvaPXW4zU9n7akARmbHvpSinzIi6QN6b6X3jc7Q+huOBYojRrK27m3TqTfckkrkvVHkyDVVTvh6W9b613ojUNKrAv7RDdvilf91M+aPDvHcYv8KnxmNS3ElTeZVB5Wn/lnFTCKX63UMAzzczRPZ80ym1JSpl6ihe5wZqDpiqQS7Dw1phBm0QuDTAdUgDS5eRRhWjurXV6LWN+VDYCTF2hWYpbVfu2gsca+y0NTMo5om4J3kEQuyx3QywlmPXwzWomNkjavf4ta9O/wp3nfh/LM7raGSTT6IY3hJ86T3OMfQteb209qtU1Zp2RwvNIMwux8+Lp4Fo3xJdK+I9TYHL1fDKUGCTFnSeHDBecHvxfq3H0sjLRc8+hylwF/K36AyLnOJusIke5ZjObs7AD3zAYAQ==",
+                      "thinking": "",
+                      "type": "thinking"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 509,
+            "prompt_tokens": 3589,
+            "total_tokens": 4098,
+            "completion_tokens_details": {
+              "reasoning_tokens": 57,
+              "text_tokens": 452
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 1159,
+              "cached_tokens": 2393,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 1159,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 1159,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 1159,
+            "cache_read_input_tokens": 2393,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.0166016,
+        "timestamp": 1792025281.8379614
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\nMyEnum.ValueA\n(e: __main__.MyEnum = MyEnum.ValueA) -> None\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n38 passed, 7 warnings in 0.42s\n</output>",
+      "extra": {
+        "raw_output": "MyEnum.ValueA\n(e: __main__.MyEnum = MyEnum.ValueA) -> None\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n38 passed, 7 warnings in 0.42s\n",
+        "returncode": 0,
+        "timestamp": 1792025282.7281427,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01MFBjzjUdbV8YG2SUG3Jnnk",
+      "role": "tool"
+    },
+    {
+      "content": "<predicted_output_tokens>300</predicted_output_tokens>",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && git diff -- sphinx/util/inspect.py > patch.txt && cat patch.txt\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01F6nKg393pswTLYqoZGD8tC",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && git diff -- sphinx/util/inspect.py > patch.txt && cat patch.txt",
+            "tool_call_id": "toolu_01F6nKg393pswTLYqoZGD8tC"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-41ae680d-61be-4da7-8d7a-c5cf3efc40b3",
+          "created": 1792025284,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>300</predicted_output_tokens>",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && git diff -- sphinx/util/inspect.py > patch.txt && cat patch.txt\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01F6nKg393pswTLYqoZGD8tC",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 107,
+            "prompt_tokens": 4249,
+            "total_tokens": 4356,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 107
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 660,
+              "cached_tokens": 3552,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 660,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 660,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 660,
+            "cache_read_input_tokens": 3552,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.006298400000000001,
+        "timestamp": 1792025284.698333
+      }
+    },
+    {
+      "content": "<returncode>0</returncode>\n<output>\ndiff --git a/sphinx/util/inspect.py b/sphinx/util/inspect.py\nindex a415a7074..9616784cf 100644\n--- a/sphinx/util/inspect.py\n+++ b/sphinx/util/inspect.py\n@@ -457,6 +457,9 @@ def object_description(object: Any) -> str:\n         else:\n             return \"frozenset({%s})\" % \", \".join(object_description(x)\n                                                  for x in sorted_values)\n+    if isinstance(object, enum.Enum):\n+        return \"%s.%s\" % (object.__class__.__name__, object.name)\n+\n     try:\n         s = repr(object)\n     except Exception as exc:\n</output>",
+      "extra": {
+        "raw_output": "diff --git a/sphinx/util/inspect.py b/sphinx/util/inspect.py\nindex a415a7074..9616784cf 100644\n--- a/sphinx/util/inspect.py\n+++ b/sphinx/util/inspect.py\n@@ -457,6 +457,9 @@ def object_description(object: Any) -> str:\n         else:\n             return \"frozenset({%s})\" % \", \".join(object_description(x)\n                                                  for x in sorted_values)\n+    if isinstance(object, enum.Enum):\n+        return \"%s.%s\" % (object.__class__.__name__, object.name)\n+\n     try:\n         s = repr(object)\n     except Exception as exc:\n",
+        "returncode": 0,
+        "timestamp": 1792025284.7618926,
+        "exception_info": ""
+      },
+      "tool_call_id": "toolu_01F6nKg393pswTLYqoZGD8tC",
+      "role": "tool"
+    },
+    {
+      "content": "<predicted_output_tokens>250</predicted_output_tokens>",
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 1,
+          "caller": {
+            "type": "direct"
+          },
+          "function": {
+            "arguments": "{\"command\": \"cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\"}",
+            "name": "bash"
+          },
+          "id": "toolu_01NFNbaDsz3oXKHEVxDesBfi",
+          "type": "function"
+        }
+      ],
+      "function_call": null,
+      "provider_specific_fields": {
+        "citations": null,
+        "thinking_blocks": null
+      },
+      "extra": {
+        "actions": [
+          {
+            "command": "cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt",
+            "tool_call_id": "toolu_01NFNbaDsz3oXKHEVxDesBfi"
+          }
+        ],
+        "response": {
+          "id": "chatcmpl-8715dfa3-4bd7-437a-a877-67bb3690352d",
+          "created": 1792025288,
+          "model": "claude-opus-5-5",
+          "object": "chat.completion",
+          "system_fingerprint": null,
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "message": {
+                "content": "<predicted_output_tokens>250</predicted_output_tokens>",
+                "role": "assistant",
+                "tool_calls": [
+                  {
+                    "index": 1,
+                    "caller": {
+                      "type": "direct"
+                    },
+                    "function": {
+                      "arguments": "{\"command\": \"cd /testbed && echo COMPLETE_TASK_AND_SUBMIT_FINAL_OUTPUT && cat patch.txt\"}",
+                      "name": "bash"
+                    },
+                    "id": "toolu_01NFNbaDsz3oXKHEVxDesBfi",
+                    "type": "function"
+                  }
+                ],
+                "function_call": null,
+                "provider_specific_fields": {
+                  "citations": null,
+                  "thinking_blocks": null
+                }
+              }
+            }
+          ],
+          "usage": {
+            "completion_tokens": 118,
+            "prompt_tokens": 4644,
+            "total_tokens": 4762,
+            "completion_tokens_details": {
+              "reasoning_tokens": 0,
+              "text_tokens": 118
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": 395,
+              "cached_tokens": 4212,
+              "text_tokens": 37,
+              "image_tokens": null,
+              "video_tokens": null,
+              "cache_creation_tokens": 395,
+              "cache_creation_token_details": {
+                "ephemeral_5m_input_tokens": 395,
+                "ephemeral_1h_input_tokens": 0
+              }
+            },
+            "cache_creation_input_tokens": 395,
+            "cache_read_input_tokens": 4212,
+            "iterations": null,
+            "inference_geo": "global",
+            "speed": null,
+            "service_tier": "standard"
+          }
+        },
+        "cost": 0.0053254,
+        "timestamp": 1792025288.1552427
+      }
+    },
+    {
+      "role": "exit",
+      "content": "diff --git a/sphinx/util/inspect.py b/sphinx/util/inspect.py\nindex a415a7074..9616784cf 100644\n--- a/sphinx/util/inspect.py\n+++ b/sphinx/util/inspect.py\n@@ -457,6 +457,9 @@ def object_description(object: Any) -> str:\n         else:\n             return \"frozenset({%s})\" % \", \".join(object_description(x)\n                                                  for x in sorted_values)\n+    if isinstance(object, enum.Enum):\n+        return \"%s.%s\" % (object.__class__.__name__, object.name)\n+\n     try:\n         s = repr(object)\n     except Exception as exc:\n",
+      "extra": {
+        "exit_status": "Submitted",
+        "submission": "diff --git a/sphinx/util/inspect.py b/sphinx/util/inspect.py\nindex a415a7074..9616784cf 100644\n--- a/sphinx/util/inspect.py\n+++ b/sphinx/util/inspect.py\n@@ -457,6 +457,9 @@ def object_description(object: Any) -> str:\n         else:\n             return \"frozenset({%s})\" % \", \".join(object_description(x)\n                                                  for x in sorted_values)\n+    if isinstance(object, enum.Enum):\n+        return \"%s.%s\" % (object.__class__.__name__, object.name)\n+\n     try:\n         s = repr(object)\n     except Exception as exc:\n"
+      }
+    }
+  ],
+  "trajectory_format": "mini-swe-agent-1.1",
+  "instance_id": "sphinx-doc__sphinx-9281"
+}
